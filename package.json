@@ -5,7 +5,7 @@
   "main": "x-comopnent.mjs",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "web-test-runner tests.mjs --node-resolve"
   },
   "repository": {
     "type": "git",
@@ -21,5 +21,10 @@
   "bugs": {
     "url": "https://github.com/allain/x-component/issues"
   },
-  "homepage": "https://github.com/allain/x-component#readme"
+  "homepage": "https://github.com/allain/x-component#readme",
+  "devDependencies": {
+    "@esm-bundle/chai": "^4.3.4",
+    "@web/test-runner": "^0.13.22",
+    "alpinejs": "^3.5.1"
+  }
 }
