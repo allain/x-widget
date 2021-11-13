@@ -1,0 +1,25 @@
+{
+  "name": "x-component",
+  "version": "0.1.0",
+  "description": "Adds the ability to define components using Alpinejs.",
+  "main": "x-comopnent.mjs",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/allain/x-component.git"
+  },
+  "keywords": [
+    "Alpinejs",
+    "web",
+    "webcomponents"
+  ],
+  "author": "Allain Lalonde <allain.lalonde@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/allain/x-component/issues"
+  },
+  "homepage": "https://github.com/allain/x-component#readme"
+}
