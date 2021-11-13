@@ -2,13 +2,19 @@
   "name": "x-component",
   "version": "0.1.0",
   "description": "Adds the ability to define components using Alpinejs.",
-  "main": "x-comopnent.mjs",
-  "type": "module",
+  "main": "./dist/x-component.js",
+  "module": "./dist/x-component.mjs",
   "scripts": {
     "build": "npm run build:esm && npm run build:js",
     "build:esm": "npx esbuild ./src/x-component.mjs --bundle --format=esm > ./dist/x-component.mjs",
-    "build:js": "npx esbuild ./src/x-component.mjs --bundle --format=iife > ./dist/x-component.js",
+    "build:js": "npx esbuild ./src/x-component.mjs --bundle --format=commonjs > ./dist/x-component.js",
     "test": "web-test-runner './test/*.test.mjs' --node-resolve"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/x-component.mjs",
+      "require": "./dist/x-component.js"
+    }
   },
   "repository": {
     "type": "git",
