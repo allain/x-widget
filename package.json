@@ -5,7 +5,10 @@
   "main": "x-comopnent.mjs",
   "type": "module",
   "scripts": {
-    "test": "web-test-runner tests.mjs --node-resolve"
+    "build": "npm run build:esm && npm run build:js",
+    "build:esm": "npx esbuild ./src/x-component.mjs --bundle --format=esm > ./dist/x-component.mjs",
+    "build:js": "npx esbuild ./src/x-component.mjs --bundle --format=iife > ./dist/x-component.js",
+    "test": "web-test-runner './test/*.test.mjs' --node-resolve"
   },
   "repository": {
     "type": "git",

@@ -1,10 +1,10 @@
+import { addScopeToNode } from 'alpinejs/src/scope.js'
+
 export default function (Alpine) {
   const findInParent = (prop) => (el) => {
     while (el && !el[prop]) el = el.parentElement
     return el?.[prop]
   }
-  Alpine.magic('attrs', findInParent('_x_attrs'))
-  Alpine.magic('props', findInParent('_x_props'))
   Alpine.magic('slots', findInParent('_x_slots'))
 
   Alpine.directive('component', xComponentDirective)
@@ -23,13 +23,12 @@ function xComponentDirective(el, { expression, modifiers }, { Alpine }) {
     name,
     class extends HTMLElement {
       disconnectedCallback() {
-        Alpine.release(this._x_attrs)
-        Alpine.release(this._x_props)
+        this._x_attrs_cleanup()
+        delete this._x_attrs_cleanup
       }
 
       connectedCallback() {
-        const attribs = (this._x_attrs = Alpine.reactive({}))
-        const props = (this._x_props = Alpine.reactive({}))
+        const attribs = Alpine.reactive({})
 
         const newEl = el.content.firstElementChild.cloneNode(true)
 
@@ -51,29 +50,28 @@ function xComponentDirective(el, { expression, modifiers }, { Alpine }) {
           targetSlot.replaceWith(...replacements)
         }
 
-        while (this.firstChild) this.removeChild(this.firstChild)
+        // need to wait to create this so the parent's _x_dataStacks are all added
+        setTimeout(() => {
+          this._x_attrs_cleanup = addScopeToNode(this, attribs)
 
-        for (const attrib of this.attributes) {
-          if (attrib.name.match(/^(:|x-bind:|x-prop:)/)) {
-            const [attrKind, name] = attrib.name.split(':')
-
-            const attribEval = Alpine.evaluateLater(this, attrib.value)
-
-            Alpine.effect(() =>
-              attribEval((value) => {
-                attrKind === 'x-prop'
-                  ? (props[name] = value)
-                  : (attribs[name] = value)
-              })
-            )
+          for (const attrib of this.attributes) {
+            if (attrib.name.match(/^(:|x-bind:)/)) {
+              const [, name] = attrib.name.split(':')
+              const attribEval = Alpine.evaluateLater(this, attrib.value)
+              Alpine.effect(() =>
+                attribEval((value) => (attribs[name] = value))
+              )
+            } else if (
+              // non bound attribute that doesn't have a binding?
+              !attrib.name.match(/^(@|x-)/) &&
+              !this.hasAttribute(':' + attrib.name) &&
+              !this.hasAttribute('x-bind:' + attrib.name)
+            ) {
+              attribs[attrib.name] = attrib.value
+            }
           }
 
-          if (!attrib.name.match(/^(@|x-|:)/))
-            attribs[attrib.name] = attrib.value
-        }
-
-        setTimeout(() => {
-          this.innerHTML = newEl.outerHTML
+          this.replaceChildren(newEl)
         }, 0)
       }
     }
