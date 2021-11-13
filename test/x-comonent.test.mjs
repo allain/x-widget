@@ -219,3 +219,21 @@ it('passes through bound attributes as non-strings', async () => {
 
   expect(innerEl.innerText).to.equal('true')
 })
+
+it('sees changes to bound attributes', async () => {
+  document.body.innerHTML = html`
+    <template x-component="x-test7">
+      <div class="inner" x-text="bar"></div>
+    </template>
+
+    <div x-data="{foo: 'foo'}">
+      <x-test7 :bar="foo"></x-test6>
+    </div>
+  `
+  const innerEl = await waitForEl('.inner')
+  expect(innerEl.innerText).to.equal('foo')
+  Alpine.evaluate(innerEl, 'foo="changed"')
+  // wait for change to propagate
+  await new Promise((r) => setTimeout(r, 1))
+  expect(innerEl.innerText).to.equal('changed')
+})
