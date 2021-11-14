@@ -31,7 +31,7 @@ beforeEach(() => (document.body.innerHTML = ''))
 
 it('works in basic case', async () => {
   document.body.innerHTML = `
-	<template x-component="x-test1">
+	<template x-widget="x-test1">
 	   <div class="inner">Hello World</div>
 	</template>
 
@@ -45,7 +45,7 @@ it('works in basic case', async () => {
 
 it('supports default slot', async () => {
   document.body.innerHTML = html`
-    <template x-component="x-test2">
+    <template x-widget="x-test2">
       <div class="inner">
         <slot></slot>
       </div>
@@ -98,7 +98,7 @@ it('supports default slot', async () => {
 
 it('supports named slots', async () => {
   document.body.innerHTML = html`
-    <template x-component="x-test3">
+    <template x-widget="x-test3">
       <div class="inner">
         <div class="header">
           <slot name="header">Default Header</slot>

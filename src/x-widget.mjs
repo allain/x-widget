@@ -5,7 +5,7 @@ export function slotsMagic(el) {
   return el?._x_slots
 }
 
-export function xComponentDirective(el, { expression, modifiers }) {
+export function xWidgetDirective(el, { expression, modifiers }) {
   const tagName = expression
 
   if (modifiers[0]) {
@@ -52,7 +52,7 @@ function findSlots(el) {
   let slots = [...el.querySelectorAll('slot')]
   const templates = el.querySelectorAll('template')
   for (const template of templates) {
-    if (template.getAttribute('x-component')) continue
+    if (template.getAttribute('x-widget')) continue
     for (const child of template.content.children) {
       slots.push(...findSlots(child))
     }

@@ -1,8 +1,8 @@
-export function xComponentData(spec) {
+export function xWidgetData(spec) {
   const Alpine = this
   return ($el, $data) => {
-    const $componentEl = findComponent($el)
-    console.assert($componentEl, 'component not found')
+    const widgetEl = findWidget($el)
+    console.assert(widgetEl, 'widget not found')
 
     const observer = new MutationObserver((changes) => {
       changes.forEach(({ attributeName, target }) =>
@@ -10,7 +10,7 @@ export function xComponentData(spec) {
       )
     })
 
-    observer.observe($componentEl, {
+    observer.observe(widgetEl, {
       attributes: true,
       attributeFilter: Object.keys(spec),
       attributeOldValue: false
@@ -20,7 +20,7 @@ export function xComponentData(spec) {
       destroy: () => observer.disconnect()
     })
 
-    const attribs = [...$componentEl.attributes]
+    const attribs = [...widgetEl.attributes]
     for (const [name, defaultValue] of Object.entries(spec)) {
       const attrib = attribs.find((attr) =>
         attr.name.match(new RegExp(`^((x-(bind|prop))?:)?${name}$`))
@@ -43,7 +43,7 @@ export function xComponentData(spec) {
           }
         })
       } else {
-        setProp(name, $componentEl.getAttribute(name))
+        setProp(name, widgetEl.getAttribute(name))
       }
     }
 
@@ -70,7 +70,7 @@ export function xComponentData(spec) {
   }
 }
 
-function findComponent(el) {
+function findWidget(el) {
   while (el && !el.tagName.includes('-')) el = el.parentElement
   return el
 }

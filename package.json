@@ -1,9 +1,9 @@
 {
-  "name": "x-comp",
+  "name": "alpinejs-comp",
   "version": "0.1.0",
-  "description": "Adds the ability to define WebComponents using Alpinejs.",
-  "main": "./dist/x-comp-all.js",
-  "module": "./dist/x-comp-all.mjs",
+  "description": "Adds the ability to define reusable Widgets (WebComponents) using Alpinejs.",
+  "main": "./dist/x-widget-all.js",
+  "module": "./dist/x-widget-all.mjs",
   "scripts": {
     "build": "./scripts/build.sh",
     "test": "web-test-runner './test/*.test.mjs' --node-resolve",
@@ -12,21 +12,21 @@
   },
   "exports": {
     ".": {
-      "import": "./dist/x-comp-all.mjs",
-      "require": "./dist/x-comp-all.js"
+      "import": "./dist/x-widget-all.mjs",
+      "require": "./dist/x-widget-all.js"
     },
     "./core": {
-      "import": "./dist/x-comp.mjs",
-      "require": "./dist/x-comp.js"
+      "import": "./dist/x-widget.mjs",
+      "require": "./dist/x-widget.js"
     },
     "./data": {
-      "import": "./dist/x-comp-data.mjs",
-      "require": "./dist/x-comp-data.js"
+      "import": "./dist/x-widget-data.mjs",
+      "require": "./dist/x-widget-data.js"
     }
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/allain/x-component.git"
+    "url": "git+https://github.com/allain/x-widget.git"
   },
   "keywords": [
     "Alpinejs",
@@ -36,9 +36,9 @@
   "author": "Allain Lalonde <allain.lalonde@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/allain/x-component/issues"
+    "url": "https://github.com/allain/x-widget/issues"
   },
-  "homepage": "https://github.com/allain/x-component#readme",
+  "homepage": "https://github.com/allain/x-widget#readme",
   "devDependencies": {
     "@esm-bundle/chai": "^4.3.4",
     "@web/test-runner": "^0.13.22",

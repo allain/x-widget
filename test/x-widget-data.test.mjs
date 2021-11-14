@@ -1,6 +1,6 @@
 import { expect } from '@esm-bundle/chai/esm/chai.js'
 import plugin from '../src/index.mjs'
-import { xComponentData } from '../src/x-component-data.mjs'
+import { xWidgetData } from '../src/x-widget-data.mjs'
 import Alpine from 'alpinejs'
 
 const waitUntil = (predicate, timeout = 10000) =>
@@ -26,14 +26,14 @@ before(() => {
   document.body.setAttribute('x-data', '')
   Alpine.plugin(plugin)
 
-  Alpine.data('xComponent', xComponentData.bind(Alpine))
+  Alpine.data('xWidget', xWidgetData.bind(Alpine))
   Alpine.start()
 })
 
 beforeEach(() => (document.body.innerHTML = ''))
 
-const tplHtml = `<template x-component="x-c">
-        <div class="inner" x-data="xComponent({show: true})($el, $data)">
+const tplHtml = `<template x-widget="x-c">
+        <div class="inner" x-data="xWidget({show: true})($el, $data)">
           <template x-if="show"><div>SHOW</div></template>
           <div class="t" x-text="JSON.stringify(show)"></div>
         </div>
@@ -143,9 +143,9 @@ it('supports binding attribute value with an expression from parent scope', asyn
 
 it('supports methods on data', async () => {
   document.body.innerHTML = html`
-    <template x-component="x-action">
+    <template x-widget="x-action">
       <div
-        x-data="xComponent({
+        x-data="xWidget({
         show: false,
         toggle() {
           this.show = !this.show

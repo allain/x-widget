@@ -1,16 +1,12 @@
-import { xComponentData } from './x-component-data.mjs'
+import { xWidgetData } from './x-widget-data.mjs'
 
-import {
-  xComponentDirective,
-  xPropDirective,
-  slotsMagic
-} from './x-component.mjs'
+import { xWidgetDirective, xPropDirective, slotsMagic } from './x-widget.mjs'
 
 export default function (Alpine) {
   Alpine.magic('slots', slotsMagic)
-  Alpine.directive('component', xComponentDirective)
+  Alpine.directive('widget', xWidgetDirective)
   Alpine.directive('prop', xPropDirective)
-  Alpine.data('xComponent', xComponentData.bind(Alpine))
+  Alpine.data('xWidget', xWidgetData.bind(Alpine))
 }
 
-export { xComponentData, xComponentDirective, xPropDirective, slotsMagic }
+export { xWidgetData, xWidgetDirective, xPropDirective, slotsMagic }
