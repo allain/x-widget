@@ -1,5 +1,5 @@
 import { expect } from '@esm-bundle/chai/esm/chai.js'
-import xComponent from '../src/x-component.mjs'
+import plugin from '../src/index.mjs'
 import Alpine from 'alpinejs'
 
 const waitUntil = (predicate, timeout = 10000) =>
@@ -23,9 +23,7 @@ const html = String.raw
 
 before(() => {
   document.body.setAttribute('x-data', '')
-  Alpine.plugin(xComponent)
-
-  window.Alpine = Alpine
+  Alpine.plugin(plugin)
   Alpine.start()
 })
 
@@ -175,65 +173,4 @@ it('supports named slots', async () => {
     const inspectEl = await waitForEl('#inspection .inspection')
     expect(inspectEl.innerText).to.equal('{"header":true}')
   }
-})
-
-it('sees external scopes', async () => {
-  document.body.innerHTML = html`
-    <template x-component="x-test4">
-      <div class="inner" x-text="foo"></div>
-    </template>
-
-    <div x-data="{foo: 'bar'}">
-      <x-test4></x-test4>
-    </div>
-  `
-
-  const innerEl = await waitForEl('.inner')
-  expect(Alpine.evaluate(innerEl, 'foo')).to.equal('bar')
-  expect(innerEl.innerText).to.equal('bar')
-})
-
-it('adds bound attributes to the component scope', async () => {
-  document.body.innerHTML = html`
-    <template x-component="x-test5">
-      <div class="inner" x-text="foo"></div>
-    </template>
-
-    <x-test5 :foo="'bar'"></x-test5>
-  `
-
-  const innerEl = await waitForEl('.inner')
-  expect(Alpine.evaluate(innerEl, 'foo')).to.equal('bar')
-  expect(innerEl.innerText).to.equal('bar')
-})
-
-it('passes through bound attributes as non-strings', async () => {
-  document.body.innerHTML = html`
-    <template x-component="x-test6">
-      <div class="inner" x-text="Array.isArray(items)"></div>
-    </template>
-
-    <x-test6 :items="[1,2,3]"></x-test6>
-  `
-  const innerEl = await waitForEl('.inner')
-
-  expect(innerEl.innerText).to.equal('true')
-})
-
-it('sees changes to bound attributes', async () => {
-  document.body.innerHTML = html`
-    <template x-component="x-test7">
-      <div class="inner" x-text="bar"></div>
-    </template>
-
-    <div x-data="{foo: 'foo'}">
-      <x-test7 :bar="foo"></x-test6>
-    </div>
-  `
-  const innerEl = await waitForEl('.inner')
-  expect(innerEl.innerText).to.equal('foo')
-  Alpine.evaluate(innerEl, 'foo="changed"')
-  // wait for change to propagate
-  await new Promise((r) => setTimeout(r, 1))
-  expect(innerEl.innerText).to.equal('changed')
 })

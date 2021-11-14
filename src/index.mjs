@@ -1,3 +1,4 @@
+import { xComponentData } from './x-component-data.mjs'
 import { addScopeToNode } from 'alpinejs/src/scope.js'
 
 export default function (Alpine) {
@@ -8,28 +9,27 @@ export default function (Alpine) {
   Alpine.magic('slots', findInParent('_x_slots'))
 
   Alpine.directive('component', xComponentDirective)
+  Alpine.directive('prop', xPropDirective)
+  // Alpine.data('xComponent', buildComponentData.bind(Alpine))
 }
 
-function xComponentDirective(el, { expression, modifiers }, { Alpine }) {
-  const name = expression
+export function xComponentDirective(el, { expression, modifiers }) {
+  const tagName = expression
 
   if (modifiers[0]) {
     const style = document.createElement('style')
-    style.innerHTML = `${name} { display: ${modifiers[0]}}`
+    style.innerHTML = `${tagName} { display: ${modifiers[0]}}`
     document.head.appendChild(style)
   }
 
+  if (window.customElements.get(tagName)) {
+    return
+  }
+
   window.customElements.define(
-    name,
+    tagName,
     class extends HTMLElement {
-      disconnectedCallback() {
-        this._x_attrs_cleanup()
-        delete this._x_attrs_cleanup
-      }
-
       connectedCallback() {
-        const attribs = Alpine.reactive({})
-
         const newEl = el.content.firstElementChild.cloneNode(true)
 
         const slotFills = collectSlotFills(this)
@@ -50,29 +50,7 @@ function xComponentDirective(el, { expression, modifiers }, { Alpine }) {
           targetSlot.replaceWith(...replacements)
         }
 
-        // need to wait to create this so the parent's _x_dataStacks are all added
-        setTimeout(() => {
-          this._x_attrs_cleanup = addScopeToNode(this, attribs)
-
-          for (const attrib of this.attributes) {
-            if (attrib.name.match(/^(:|x-bind:)/)) {
-              const [, name] = attrib.name.split(':')
-              const attribEval = Alpine.evaluateLater(this, attrib.value)
-              Alpine.effect(() =>
-                attribEval((value) => (attribs[name] = value))
-              )
-            } else if (
-              // non bound attribute that doesn't have a binding?
-              !attrib.name.match(/^(@|x-)/) &&
-              !this.hasAttribute(':' + attrib.name) &&
-              !this.hasAttribute('x-bind:' + attrib.name)
-            ) {
-              attribs[attrib.name] = attrib.value
-            }
-          }
-
-          this.replaceChildren(newEl)
-        }, 0)
+        this.replaceChildren(newEl)
       }
     }
   )
@@ -113,3 +91,53 @@ function collectSlotFills(el) {
 
   return slots
 }
+
+export function xPropDirective(
+  el,
+  { value: propName, expression },
+  { Alpine, cleanup }
+) {
+  let evaluate = Alpine.evaluateLater(el, expression)
+
+  let setter
+  if (safeLeftHandSide(expression)) {
+    setter = Alpine.evaluateLater(el, `${expression} = __placeholder`)
+  } else {
+    setter = () => {}
+  }
+
+  if (!el._x_props) {
+    el._x_props = {}
+    addScopeToNode(el, el._x_props)
+  }
+
+  cleanup(() => {
+    delete el._x_props[propName]
+    if (Object.keys(el._x_props).length === 0) {
+      delete el._x_props
+    }
+  })
+
+  Object.defineProperty(el._x_props, propName, {
+    enumerable: true,
+    configurable: true,
+    get() {
+      let result
+      evaluate((value) => (result = value))
+      return result
+    },
+    set(value) {
+      setter(() => {}, { scope: { __placeholder: value } })
+    }
+  })
+}
+function safeLeftHandSide(varName) {
+  try {
+    new Function(`var ${varName} = 1`)()
+    return true
+  } catch {
+    return false
+  }
+}
+
+export { xComponentData }

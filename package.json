@@ -6,8 +6,8 @@
   "module": "./dist/x-component.mjs",
   "scripts": {
     "build": "npm run build:esm && npm run build:js",
-    "build:esm": "npx esbuild ./src/x-component.mjs --bundle --format=esm > ./dist/x-component.mjs",
-    "build:js": "npx esbuild ./src/x-component.mjs --bundle --format=commonjs > ./dist/x-component.js",
+    "build:esm": "npx esbuild ./src/index.mjs --bundle --format=esm > ./dist/x-component.mjs",
+    "build:js": "npx esbuild ./src/index.mjs --bundle --format=cjs > ./dist/x-component.js",
     "test": "web-test-runner './test/*.test.mjs' --node-resolve"
   },
   "exports": {
