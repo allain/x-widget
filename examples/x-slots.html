@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<script type="module">
+  import Alpinejs from 'https://jspm.dev/alpinejs@3.5.1'
+  import xWidget from 'https://unpkg.com/x-widget@0.1.1/dist/x-widget-all.min.mjs'
+
+  // install xWidget plugin
+  Alpinejs.plugin(xWidget)
+  Alpinejs.start()
+</script>
+
+<template x-data x-widget="x-panel">
+  <div style="margin-bottom: 20px">
+    <div x-show="$slots.header" style="background-color: blue; color: white">
+      <!-- named slot -->
+      <slot name="header"></slot>
+    </div>
+    <div>
+      <!-- default slot -->
+      <slot></slot>
+    </div>
+  </div>
+</template>
+
+<div x-data>
+  <x-panel>
+    <template slot="header"> Header </template>
+    <template> Panel 1 Content </template>
+  </x-panel>
+
+  <x-panel>
+    <template slot="header"> Header </template>
+    Panel 2 Content
+  </x-panel>
+
+  <x-panel>
+    <template> Panel 3 Content</template>
+  </x-panel>
+</div>

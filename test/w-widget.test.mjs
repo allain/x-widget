@@ -77,7 +77,7 @@ it('supports default slot', async () => {
     expect(innerEl.innerHTML.trim()).to.equal('Hello World')
   }
 
-  // single html element
+  /*  // single html element
   {
     const innerEl = await waitForEl('#html .inner')
     expect(innerEl.innerHTML.trim()).to.equal('<div>Hello World</div>')
@@ -93,7 +93,25 @@ it('supports default slot', async () => {
   {
     const innerEl = await waitForEl('#named .inner')
     expect(innerEl.innerHTML.trim()).to.equal('<div>Hello World</div>')
-  }
+  }*/
+})
+
+it('supports default slot without template tag', async () => {
+  document.body.innerHTML = html`
+    <template x-widget="x-default-test">
+      <div class="inner">
+        <slot></slot>
+      </div>
+    </template>
+
+    <x-default-test id="test">
+      Hello
+      <div>World</div>
+    </x-default-test>
+  `
+
+  const innerEl = await waitForEl('#test .inner')
+  expect(innerEl.innerText.replace(/\s+/g, ' ').trim()).to.equal('Hello World')
 })
 
 it('supports named slots', async () => {

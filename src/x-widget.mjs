@@ -63,20 +63,28 @@ function findSlots(el) {
 function collectSlotFills(el) {
   const slots = new Map()
 
-  for (const child of el.children) {
-    if (child.tagName !== 'TEMPLATE') continue
+  function collectForSlot(slotName, nodes) {
+    if (slots.has(slotName)) {
+      slots.get(slotName).push(...nodes)
+    } else {
+      slots.set(slotName, nodes)
+    }
+  }
 
-    const rawSlotName = child.getAttribute('slot')
-    const slotName = rawSlotName || 'default'
-    if (!slots.has(slotName)) slots.set(slotName, [])
+  for (const child of el.childNodes) {
+    if (child.tagName === 'TEMPLATE') {
+      const slotName = child.getAttribute('slot')
 
-    const isSlotFill =
-      !rawSlotName &&
-      (child.getAttribute('x-for') || child.getAttribute('x-if'))
+      const isSlotFill =
+        !slotName && (child.getAttribute('x-for') || child.getAttribute('x-if'))
 
-    slots
-      .get(slotName)
-      .push(...(isSlotFill ? [child] : child.content.childNodes))
+      collectForSlot(
+        slotName || 'default',
+        isSlotFill ? [child] : [...child.content.childNodes]
+      )
+    } else if (child.nodeType !== Node.TEXT_NODE || child.textContent.trim()) {
+      collectForSlot('default', [child])
+    }
   }
 
   return slots

@@ -7,35 +7,33 @@ It's implemented using WebComponents but it favors keeping the component state i
 ## Usage
 
 ```html
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>x-button example</title>
-    <script type="module">
-      import Alpinejs from 'https://jspm.dev/alpinejs@3.5.1'
-      import xWidget from 'https://unpkg.com/x-widget@0.1.1/dist/x-widget-all.min.mjs'
+<!-- Step 1. Define the Widget -->
+<template x-widget="x-button">
+  <button x-data="xWidget({label: ''})($el, $data)" x-text="label"></button>
+</template>
 
-      Alpinejs.plugin(xWidget)
-      Alpinejs.start()
-    </script>
-  </head>
-  <body x-data>
-    <!-- Define the Widget -->
-    <template x-widget="x-button">
-      <button x-data="xWidget({label: ''})($el, $data)" x-text="label"></button>
-    </template>
-
-    <div x-data="{message: 'Click me'}">
-      <!-- Use the widget -->
-      <x-button :label="message" @click="message='Thanks'"></x-button>
-    </div>
-  </body>
-</html>
+<!-- Step 2. Use the widget -->
+<div x-data="{message: 'Click me'}">
+  <x-button :label="message" @click="message='Thanks'"></x-button>
+</div>
 ```
 
-## Features
+## Installing x-widget
 
-### Slots
+1. Install x-widget npm package:
+
+```bash
+npm install x-widget
+```
+
+2. Install xWidget plugin for Alpine.js:
+
+```js
+import xWidget from 'x-widget'
+Alpine.plugin(xWidget)
+```
+
+## Using Slots
 
 ```html
 <template x-widget="x-panel">
@@ -63,22 +61,17 @@ It's implemented using WebComponents but it favors keeping the component state i
 </x-panel>
 ```
 
-### Widget Properties
+## Widget Data
 
 Widget data is a helper that lets you to define the properties, data types, and the defaults your widget expects.
 
-It supports giving values for properties using attributes, as well as a new `x-prop` mechanism that makes it easy to two way bind of scope data to widget properties.
+It supports giving values for properties using attributes, as well as a new `x-prop` mechanism that makes it easy to have two-way binding of scope data and widget properties.
 
 In the example below, clicking on "Close" will set `showDropdown` to false.
 
 ```html
 <template x-widget="x-dropdown">
-  <div
-    x-data="xWidget({
-      open: false, // define show as a boolean with default value of false
-      items: [], // define items as an array with default value of []
-    })($el, $data)"
-  >
+  <div x-data="xWidget({ open: false, items: [] })($el, $data)">
     <div x-show="open">
       <button @click="open = false">Close</button>
       <template x-for="item of items">
