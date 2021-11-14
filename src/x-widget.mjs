@@ -39,8 +39,10 @@ export function xWidgetDirective(el, { expression, modifiers }) {
 
           targetSlot.replaceWith(...replacements)
         }
-
-        this.replaceChildren(newEl)
+        this.innerHTML = ''
+        setTimeout(() => {
+          this.replaceChildren(newEl)
+        }, 0)
       }
     }
   )
