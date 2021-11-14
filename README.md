@@ -86,11 +86,11 @@ If you don't like the look of having the controller's spec in the DOM, you can d
 
 ```html
 <script>
-  import { xController } from 'x-component'
+  import { xControllerData } from 'x-component'
 
   Alpine.data(
     'xDropdown',
-    xController({
+    xControllerData({
       open: false, // define show as a boolean with default value of false
       items: [] // define items as an array with default value of []
     })
