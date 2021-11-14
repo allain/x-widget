@@ -1,20 +1,17 @@
-# x-component
+# x-comp
 
-Adds the ability to define components using Alpinejs.
+Adds the ability to define web components using Alpinejs.
 
-## Usage
-
-### Definition
+## Basic Usage
 
 ```html
+<!-- Define the Component using the x-component directive -->
 <template x-component="x-button">
 <button><slot><span x-text="label"></span></button>
 </template>
-```
 
-### Usage
-
-```html
+<!-- Use the component -->
+<x-button x-data="{label: 'Click me!'}"></x-button>
 <x-button x-data="{label: 'Click me!'}"></x-button>
 ```
 
@@ -51,7 +48,7 @@ Adds the ability to define components using Alpinejs.
 
 The data controller is an optional feature that allows you to define the properties, their data types, and the defaults your component expects.
 
-It supports giving values for properties using attributes, as well as a new `x-prop:` mechanism.
+It supports giving values for properties using attributes, as well as a new `x-prop` mechanism.
 
 Normally when you bind an attribute to an element it must serialize it to a string. `x-prop:` allows you to bypass this and provide the value directly.
 

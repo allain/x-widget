@@ -1,9 +1,9 @@
 {
   "name": "x-comp",
   "version": "0.1.0",
-  "description": "Adds the ability to define WebComponents components using Alpinejs.",
-  "main": "./dist/x-comp.js",
-  "module": "./dist/x-comp.mjs",
+  "description": "Adds the ability to define WebComponents using Alpinejs.",
+  "main": "./dist/x-comp-all.js",
+  "module": "./dist/x-comp-all.mjs",
   "scripts": {
     "build": "./scripts/build.sh",
     "test": "web-test-runner './test/*.test.mjs' --node-resolve",
@@ -12,8 +12,16 @@
   },
   "exports": {
     ".": {
+      "import": "./dist/x-comp-all.mjs",
+      "require": "./dist/x-comp-all.js"
+    },
+    "./core": {
       "import": "./dist/x-comp.mjs",
       "require": "./dist/x-comp.js"
+    },
+    "./data": {
+      "import": "./dist/x-comp-data.mjs",
+      "require": "./dist/x-comp-data.js"
     }
   },
   "repository": {
