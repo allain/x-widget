@@ -140,3 +140,32 @@ it('supports binding attribute value with an expression from parent scope', asyn
   await new Promise((r) => setTimeout(r, 1))
   expect(Alpine.evaluate(rootEl, 'rootShow')).to.be.false
 })
+
+it('supports methods on data', async () => {
+  document.body.innerHTML = html`
+    <template x-component="x-action">
+      <div
+        x-data="xComponent({
+        show: false,
+        toggle() {
+          this.show = !this.show
+        }
+      })($el, $data)"
+      >
+        <button @click="toggle">Toggle</button>
+        <div x-text="show ? 'SHOW':''"></div>
+      </div>
+    </template>
+
+    <x-action></x-action>
+  `
+
+  const xAction = await waitForEl('x-action')
+  expect(xAction.innerText).not.to.contain('SHOW')
+
+  const button = await waitForEl('button')
+  button.click()
+
+  await new Promise((r) => setTimeout(r, 1))
+  expect(xAction.innerText).to.contain('SHOW')
+})

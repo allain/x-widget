@@ -6,7 +6,9 @@
   "module": "./dist/x-component.mjs",
   "scripts": {
     "build": "./scripts/build.sh",
-    "test": "web-test-runner './test/*.test.mjs' --node-resolve"
+    "test": "web-test-runner './test/*.test.mjs' --node-resolve",
+    "test:coverage": "npm run test -- --coverage",
+    "test:watch": "npm run test -- --watch"
   },
   "exports": {
     ".": {
