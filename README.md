@@ -1,18 +1,36 @@
 # x-widget
 
-Adds the ability to define web widgets using Alpinejs.
+Adds the ability to define widgets using [Alpinejs](https://alpinejs.dev/)
 
-## Basic Usage
+It's implemented using WebComponents but it favors keeping the component state in the scope of the component rather than embedding it as attributes on the dom nodes.
+
+## Usage
 
 ```html
-<!-- Define the Widget using the x-widget directive -->
-<template x-widget="x-button">
-<button><slot><span x-text="label"></span></button>
-</template>
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>x-button example</title>
+    <script type="module">
+      import Alpinejs from 'https://jspm.dev/alpinejs@3.5.1'
+      import xWidget from 'https://unpkg.com/x-widget@0.1.1/dist/x-widget-all.min.mjs'
 
-<!-- Use the widget -->
-<x-button x-data="{label: 'Click me!'}"></x-button>
-<x-button x-data="{label: 'Click me!'}"></x-button>
+      Alpinejs.plugin(xWidget)
+      Alpinejs.start()
+    </script>
+  </head>
+  <body x-data>
+    <!-- Define the Widget -->
+    <template x-widget="x-button">
+      <button x-data="xWidget({label: ''})($el, $data)" x-text="label"></button>
+    </template>
+
+    <div x-data="{message: 'Click me'}">
+      <!-- Use the widget -->
+      <x-button :label="message" @click="message='Thanks'"></x-button>
+    </div>
+  </body>
+</html>
 ```
 
 ## Features
@@ -34,6 +52,7 @@ Adds the ability to define web widgets using Alpinejs.
 </template>
 
 <x-panel>
+  <!-- Named Slot -->
   <template slot="header">
     <h1>Panel Header</h1>
   </template>
@@ -44,15 +63,13 @@ Adds the ability to define web widgets using Alpinejs.
 </x-panel>
 ```
 
-### Optional Data Controller
+### Widget Properties
 
-The data controller is an optional feature that allows you to define the properties, their data types, and the defaults your widget expects.
+Widget data is a helper that lets you to define the properties, data types, and the defaults your widget expects.
 
-It supports giving values for properties using attributes, as well as a new `x-prop` mechanism.
+It supports giving values for properties using attributes, as well as a new `x-prop` mechanism that makes it easy to two way bind of scope data to widget properties.
 
-Normally when you bind an attribute to an element it must serialize it to a string. `x-prop:` allows you to bypass this and provide the value directly.
-
-In addition, `x-prop` provide two way binding. In the example below, that means clicking on "close" will set showDropdown to false.
+In the example below, clicking on "Close" will set `showDropdown` to false.
 
 ```html
 <template x-widget="x-dropdown">
@@ -79,7 +96,7 @@ In addition, `x-prop` provide two way binding. In the example below, that means 
 </div>
 ```
 
-If you don't like the look of having the widget's spec in the DOM, you can do this:
+If you don't like the look of having the widget's spec in the DOM, you can use the following approach too:
 
 ```html
 <script>

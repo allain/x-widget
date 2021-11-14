@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<script type="module">
+  import Alpinejs from 'https://jspm.dev/alpinejs@3.5.1'
+  import xWidget from 'https://unpkg.com/x-widget@0.1.1/dist/x-widget-all.min.mjs'
+
+  Alpinejs.plugin(xWidget)
+  Alpinejs.start()
+</script>
+
+<template x-data x-widget="x-button">
+  <button x-data="xWidget({label: ''})($el, $data)" x-text="label"></button>
+</template>
+
+<div x-data="{message: 'Click me'}">
+  <x-button :label="message" @click="message='Thanks'"></x-button>
+</div>
