@@ -66,7 +66,7 @@ In addition, `x-prop` provide two way binding. In the example below, that means 
     })($el, $data)"
   >
     <div x-show="open">
-      <button @click="open = false"></button>
+      <button @click="open = false">Close</button>
       <template x-for="item of items">
         <option :value="item.value" x-text="item.label"></option>
       </template>
