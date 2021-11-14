@@ -4,6 +4,11 @@
   "description": "Adds the ability to define reusable Widgets (WebComponents) using Alpinejs.",
   "main": "./dist/x-widget-all.js",
   "module": "./dist/x-widget-all.mjs",
+  "files": [
+    "dist/",
+    "src/",
+    "test/"
+  ],
   "scripts": {
     "build": "./scripts/build.sh",
     "test": "web-test-runner './test/*.test.mjs' --node-resolve",
