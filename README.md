@@ -8,26 +8,28 @@ Adds the ability to define components using Alpinejs.
 
 ```html
 <template x-component="x-button">
-<button><slot><span x-text="$attrs.label"></span></button>
+<button><slot><span x-text="label"></span></button>
 </template>
 ```
 
 ### Usage
 
 ```html
-<x-button label="Click me!"></x-button>
+<x-button x-data="{label: 'Click me!'}"></x-button>
 ```
 
 ## Features
 
-# Slots
+### Slots
 
 ```html
 <template x-component="x-panel">
   <div>
-    <div>
-      <slot name="header"></slot>
-    </div>
+    <template x-if="$slots.header">
+      <div class="header">
+        <slot name="header"></slot>
+      </div>
+    </template>
     <div>
       <slot></slot>
     </div>
@@ -45,10 +47,64 @@ Adds the ability to define components using Alpinejs.
 </x-panel>
 ```
 
-## Magics
+### Optional Data Controller
 
-`$slots` - A way of specifying if a slot has been given.
+The data controller is an optional feature that allows you to define the properties, their data types, and the defaults your component expects.
 
-`$attrs` - The attributes of the component.
+It supports giving values for properties using attributes, as well as a new `x-prop:` mechanism.
 
-`$props` - The properties given to the component (may not be needed).
+Normally when you bind an attribute to an element it must serialize it to a string. `x-prop:` allows you to bypass this and provide the value directly.
+
+In addition, `x-prop` provide two way binding. In the example below, that means clicking on "close" will set showDropdown to false.
+
+```html
+<template x-component="x-dropdown">
+  <div
+    x-data="xController({
+      open: false, // define show as a boolean with default value of false
+      items: [], // define items as an array with default value of []
+    })($el, $data)"
+  >
+    <div x-show="open">
+      <button @click="open = false"></button>
+      <template x-for="item of items">
+        <option :value="item.value" x-text="item.label"></option>
+      </template>
+    </div>
+  </div>
+</template>
+
+<div x-data="{showDropdown: true}">
+  <x-dropdown
+    x-prop:open="showDropdown"
+    x-prop:items="[{value: 1, label: 'One'}, {value: 2, label: 'Two'}]"
+  ></x-dropdown>
+</div>
+```
+
+If you don't like the look of having the controller's spec in the DOM, you can do this:
+
+```html
+<script>
+  import { xController } from 'x-component'
+
+  Alpine.data(
+    'xDropdown',
+    xController({
+      open: false, // define show as a boolean with default value of false
+      items: [] // define items as an array with default value of []
+    })
+  )
+</script>
+
+<template x-component="x-dropdown">
+  <div x-data="xDropdown($el, $data)">
+    <div x-show="open">
+      <button @click="open = false"></button>
+      <template x-for="item of items">
+        <option :value="item.value" x-text="item.label"></option>
+      </template>
+    </div>
+  </div>
+</template>
+```
