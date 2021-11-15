@@ -108,12 +108,18 @@ export function xPropDirective(
 
   if (!el._x_props) {
     el._x_props = {}
-    addScopeToNode(el, el._x_props)
+    el._x_props_cleanup = addScopeToNode(el, el._x_props)
   }
 
   cleanup(() => {
+    if (!el._x_props) return
+
     delete el._x_props[propName]
-    if (Object.keys(el._x_props).length === 0) delete el._x_props
+    if (Object.keys(el._x_props).length === 0) {
+      el._x_props_cleanup()
+      delete el._x_props
+      delete el._x_props_cleanup
+    }
   })
 
   Object.defineProperty(el._x_props, propName, {

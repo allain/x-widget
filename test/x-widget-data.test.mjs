@@ -45,6 +45,7 @@ it('uses default if not given', async () => {
     <x-c></x-c>
   `
   const c = await waitForEl('x-c')
+  await new Promise((resolve) => setTimeout(resolve, 1))
   expect(c.innerText).to.contain('SHOW')
 })
 
