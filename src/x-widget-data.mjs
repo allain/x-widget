@@ -16,19 +16,26 @@ export function xWidgetData(spec) {
       attributeOldValue: false
     })
 
-    const data = Alpine.reactive({
-      destroy: () => observer.disconnect()
-    })
+    const data = Alpine.reactive(
+      Object.assign(
+        Object.create(
+          Object.getPrototypeOf(spec),
+          Object.getOwnPropertyDescriptors(spec)
+        ),
+        {
+          destroy() {
+            observer.disconnect()
+          }
+        }
+      )
+    )
 
     const attribs = [...widgetEl.attributes]
-    for (const [name, defaultValue] of Object.entries(spec)) {
+    for (const name of Object.getOwnPropertyNames(spec)) {
       const attrib = attribs.find((attr) =>
         attr.name.match(new RegExp(`^((x-(bind|prop))?:)?${name}$`))
       )
-      if (!attrib) {
-        data[name] = defaultValue
-        continue
-      }
+      if (!attrib) continue
 
       // is bound using prop defer to internals of x-prop
       if (attrib.name.startsWith('x-prop:')) {
@@ -47,6 +54,7 @@ export function xWidgetData(spec) {
       }
     }
 
+    // validate attribValue to conform to spec
     function setProp(name, attribValue) {
       const defaultValue = spec[name]
       if (typeof defaultValue === 'boolean') {

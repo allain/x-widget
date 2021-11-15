@@ -170,3 +170,44 @@ it('supports methods on data', async () => {
   await new Promise((r) => setTimeout(r, 1))
   expect(xAction.innerText).to.contain('SHOW')
 })
+
+it('supports getters and setters', async () => {
+  document.body.innerHTML = html`
+    <template x-widget="x-getset">
+      <div
+        id="inner"
+        x-data="xWidget({
+          tests: [],
+          get tested() {
+            return this.tests.length > 0
+          },
+          set tested(newValue) {
+            if (newValue === false) {
+              this.tested = []
+            }
+          },
+          test() {
+            this.tests = [...this.tests, Date.now()]
+          }
+        })($el, $data)"
+      >
+        <button @click="tested=false">Untest</button>
+        <button @click="test">Test</button>
+        <div x-text="tested ? 'Tested':'Untested'"></div>
+      </div>
+    </template>
+
+    <x-getset></x-getset>
+  `
+
+  const xGetSet = await waitForEl('x-getset')
+  const xGetSetInner = await waitForEl('x-getset #inner')
+
+  await new Promise((r) => setTimeout(r, 1))
+  expect(xGetSet.innerText).to.contain('Untested')
+
+  Alpine.evaluate(xGetSetInner, 'test()')
+  await new Promise((r) => setTimeout(r, 100))
+
+  expect(xGetSet.innerText).to.contain('Tested')
+})
