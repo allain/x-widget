@@ -97,11 +97,14 @@ export function xPropDirective(
   { value: propName, expression },
   { Alpine, cleanup }
 ) {
-  let evaluate = Alpine.evaluateLater(el, expression)
+  let evaluate = Alpine.evaluateLater(el.parentElement, expression)
 
   let setter
   if (safeLeftHandSide(expression)) {
-    setter = Alpine.evaluateLater(el, `${expression} = __placeholder`)
+    setter = Alpine.evaluateLater(
+      el.parentElement,
+      `${expression} = __placeholder`
+    )
   } else {
     setter = () => {}
   }
