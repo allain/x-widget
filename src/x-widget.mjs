@@ -138,9 +138,13 @@ export function xPropDirective(
     }
   })
 }
+
+// used to test path references (_t.a.b.c = 1 for example)
+const _t = new Proxy({}, { get: () => _t })
+
 function safeLeftHandSide(varName) {
   try {
-    new Function(`var ${varName} = 1`)()
+    new Function(`${varName.includes('.') ? '_t.' : 'var '}${varName}=1`)()
     return true
   } catch {
     return false
