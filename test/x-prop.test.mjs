@@ -82,6 +82,23 @@ it('cleans up if last prop removed', async () => {
   expect(spanEl._x_props).to.be.undefined
 })
 
+it('supports deep refs', async () => {
+  document.body.innerHTML = html`
+    <div id="root" x-data="{a: {b: 10}}">
+      <div class="inner" x-prop:x="a.b"></div>
+    </div>
+  `
+
+  const rootEl = await waitForEl('#root')
+  const innerEl = await waitForEl('.inner')
+
+  await new Promise((r) => setTimeout(r, 0))
+  Alpine.evaluate(innerEl, 'x = 20')
+  await new Promise((r) => setTimeout(r, 0))
+
+  expect(Alpine.evaluate(rootEl, 'a.b')).to.equal(20)
+})
+
 it('works with non left hand side expressions', async () => {
   document.body.innerHTML = html`
     <div id="root" x-prop:x="10" x-prop:y="20" x-text="x + y"></div>
