@@ -48,6 +48,7 @@
   "devDependencies": {
     "@esm-bundle/chai": "^4.3.4",
     "@web/test-runner": "^0.13.22",
-    "alpinejs": "^3.5.1"
+    "alpinejs": "^3.5.1",
+    "esbuild": "^0.13.15"
   }
 }

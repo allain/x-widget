@@ -5,9 +5,13 @@ export function xWidgetData(spec) {
     console.assert(widgetEl, 'widget not found')
 
     const observer = new MutationObserver((changes) => {
-      changes.forEach(({ attributeName, target }) =>
+      changes.forEach(({ attributeName, target }) => {
         setProp(attributeName, target.getAttribute(attributeName))
-      )
+        if (!target.isConnected) {
+          // TODO: make destroy method below work so we don't need to check for this
+          observer.disconnect()
+        }
+      })
     })
 
     observer.observe(widgetEl, {
@@ -21,12 +25,13 @@ export function xWidgetData(spec) {
         Object.create(
           Object.getPrototypeOf(spec),
           Object.getOwnPropertyDescriptors(spec)
-        ),
-        {
-          destroy() {
-            observer.disconnect()
-          }
-        }
+        )
+        // TODO: figure out why destroy is called almost immediately after the widget gets mounted
+        // {
+        //   destroy() {
+        //     observer.disconnect()
+        //   }
+        // }
       )
     )
 
