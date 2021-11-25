@@ -144,7 +144,10 @@ const _t = new Proxy({}, { get: () => _t })
 
 function safeLeftHandSide(lhs) {
   try {
-    new Function('t', `${lhs.includes('.') ? 't.' : 'var '}${lhs}=1`)(_t)
+    new Function(
+      't',
+      `with(t) { ${lhs.includes('.') ? 't.' : 'var '}${lhs}=1}`
+    )(_t)
     return true
   } catch {
     return false

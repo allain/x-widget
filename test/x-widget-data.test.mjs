@@ -78,6 +78,18 @@ it('supports binding a prop with a scalar value', async () => {
   expect(c.innerText).to.contain('SHOW')
 })
 
+it.skip('supports refs when lhs is complex', async () => {
+  document.body.innerHTML = html`
+  <div x-data="{y: 'test', names: {test: 'Al'}}"
+    ${tplHtml}
+    <x-c x-prop:show="names[y]"></x-c>
+  </div>
+  `
+  const c = await waitForEl('x-c')
+
+  expect(c.innerText).to.contain('SHOW')
+})
+
 it('supports binding a prop with an expression from parent scope', async () => {
   document.body.innerHTML = html`
     ${tplHtml}
