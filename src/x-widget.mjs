@@ -40,9 +40,7 @@ export function xWidgetDirective(el, { expression, modifiers }) {
           targetSlot.replaceWith(...replacements)
         }
         this.innerHTML = ''
-        setTimeout(() => {
-          this.replaceChildren(newEl)
-        }, 0)
+        setTimeout(() => this.replaceChildren(newEl), 0)
       }
     }
   )
@@ -142,14 +140,18 @@ export function xPropDirective(
 // used to test path references (_t.a.b.c = 1 for example)
 const _t = new Proxy({}, { get: () => _t })
 
-function safeLeftHandSide(lhs) {
-  try {
-    new Function(
-      't',
-      `with(t) { ${lhs.includes('.') ? 't.' : 'var '}${lhs}=1}`
-    )(_t)
-    return true
-  } catch {
-    return false
-  }
+const keywords = (
+  'abstract|arguments|await|boolean|break|byte|case|catch|char|class|const|continue|debugger|default|delete|' +
+  'do|double|else|enum|eval|export|extends|false|final|finally|float|for|function|goto|if|implements|import|' +
+  'in|instanceof|int|interface|let|long|native|new|null|package|private|protected|public|return|short|static|' +
+  'super|switch|synchronized|this|throw|throws|transient|true|try|typeof|var|void|volatile|while|with|yield'
+).split('|')
+
+export function safeLeftHandSide(lhs) {
+  // 1. split lhs by . [ ]
+  // 2. check that they match as basic words
+  // 3. check that they are not in the keywords set
+  return !lhs
+    .split(/[.\[\]]/g)
+    .find((t) => !t.match(/^[a-z][a-z0-9_]*$/gi) || keywords.includes(t))
 }
