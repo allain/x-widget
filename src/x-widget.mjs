@@ -1,4 +1,8 @@
-import { addScopeToNode } from 'alpinejs/src/scope.js'
+import {
+  addScopeToNode,
+  closestDataStack,
+  mergeProxies
+} from 'alpinejs/src/scope.js'
 
 export function slotsMagic(el) {
   while (el && !el._x_slots) el = el.parentElement
@@ -136,19 +140,6 @@ export function xPropDirective(
     }
   })
 }
-
-// used to test path references (_t.a.b.c = 1 for example)
-const _t = new Proxy({}, { get: () => _t })
-
-const keywords = (
-  'abstract|arguments|await|boolean|break|byte|case|catch|char|class|const|continue|debugger|default|delete|' +
-  'do|double|else|enum|eval|export|extends|false|final|finally|float|for|function|goto|if|implements|import|' +
-  'in|instanceof|int|interface|let|long|native|new|null|package|private|protected|public|return|short|static|' +
-  'super|switch|synchronized|this|throw|throws|transient|true|try|typeof|var|void|volatile|while|with|yield'
-).split('|')
-
-// import { injectMagics } from 'alpinejs/src/magics.js'
-import { closestDataStack, mergeProxies } from 'alpinejs/src/scope.js'
 
 export function safeLeftHandSide(el, lhs) {
   try {
