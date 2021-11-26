@@ -98,7 +98,7 @@ export function xPropDirective(
   let evaluate = Alpine.evaluateLater(el.parentElement, expression)
 
   let setter
-  if (safeLeftHandSide(expression)) {
+  if (safeLeftHandSide(el, expression)) {
     setter = Alpine.evaluateLater(
       el.parentElement,
       `${expression} = __placeholder`
@@ -147,15 +147,15 @@ const keywords = (
   'super|switch|synchronized|this|throw|throws|transient|true|try|typeof|var|void|volatile|while|with|yield'
 ).split('|')
 
-export function safeLeftHandSide(lhs) {
-  // swap out [true] [false] [0.5] [1] into [valid] since they are allowed to be used to index arrays or maps
+// import { injectMagics } from 'alpinejs/src/magics.js'
+import { closestDataStack, mergeProxies } from 'alpinejs/src/scope.js'
 
-  // 1. support array indexing using values by replacing them with [valid]
-  // 2. split lhs by one of ".", "[", or "]"
-  // 3. check that the constituent parts look like words
-  // 4. check that they are not in the keywords set
-  return !lhs
-    .replace(/\[(?:true|false|(?:\d+[.])?\d+)\]/g, '[valid]')
-    .split(/[.\[\]]/g)
-    .find((t) => !t.match(/^[a-z][a-z0-9_]*$/gi) || keywords.includes(t))
+export function safeLeftHandSide(el, lhs) {
+  try {
+    let scope = mergeProxies(closestDataStack(el))
+    new Function('scope', `with(scope) {${lhs} = ${lhs}}`)(scope)
+    return true
+  } catch {
+    return false
+  }
 }
