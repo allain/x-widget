@@ -148,10 +148,14 @@ const keywords = (
 ).split('|')
 
 export function safeLeftHandSide(lhs) {
-  // 1. split lhs by . [ ]
-  // 2. check that they match as basic words
-  // 3. check that they are not in the keywords set
+  // swap out [true] [false] [0.5] [1] into [valid] since they are allowed to be used to index arrays or maps
+
+  // 1. support array indexing using values by replacing them with [valid]
+  // 2. split lhs by one of ".", "[", or "]"
+  // 3. check that the constituent parts look like words
+  // 4. check that they are not in the keywords set
   return !lhs
+    .replace(/\[(?:true|false|(?:\d+[.])?\d+)\]/g, '[valid]')
     .split(/[.\[\]]/g)
     .find((t) => !t.match(/^[a-z][a-z0-9_]*$/gi) || keywords.includes(t))
 }
