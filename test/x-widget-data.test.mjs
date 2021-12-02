@@ -228,11 +228,11 @@ it('supports getters and setters', async () => {
 it('supports binding a camelcase prop', async () => {
   document.body.innerHTML = html`
     ${tplHtml}
-    <div id="root" x-data="{rootShow: false, firstName: 'John'}">
-      <x-c x-prop:show="rootShow" x-prop:first-name="firstName"></x-c>
+    <div id="root" x-data="{ name: 'John'}">
+      <x-c x-prop:first-name="name"></x-c>
     </div>
   `
   const c = await waitForEl('x-c')
-
+  await new Promise((r) => setTimeout(r, 100))
   expect(c.innerText).to.contain('John')
 })

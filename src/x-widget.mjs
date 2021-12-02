@@ -96,9 +96,10 @@ function collectSlotFills(el) {
 
 export function xPropDirective(
   el,
-  { value: propName, expression },
+  { value: attribName, expression },
   { Alpine, cleanup }
 ) {
+  const propName = snakeToCamel(attribName)
   let evaluate = Alpine.evaluateLater(el.parentElement, expression)
 
   let setter
@@ -150,3 +151,6 @@ export function safeLeftHandSide(el, lhs) {
     return false
   }
 }
+
+const snakeToCamel = (name) =>
+  name.replace(/-([a-zA-Z])/g, (m) => m[1].toUpperCase() + m.substr(2))
