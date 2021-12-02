@@ -1,0 +1,30 @@
+#!/usr/bin/env zx
+
+const { fs } = require('zx')
+
+if (!(await fs.pathExists('dist'))) {
+  await $`mkdir dist`
+}
+
+const nodeExe = os.platform() === 'win32' ? 'node.exe' : 'node'
+const esBuildPath = './node_modules/esbuild/bin/esbuild'
+
+await Promise.all([
+  // x-widget-all files
+  $`${nodeExe} ${esBuildPath} ./src/index.mjs --bundle --format=esm >./dist/x-widget-all.mjs`,
+  $`${nodeExe} ${esBuildPath} ./src/index.mjs --bundle --format=cjs >./dist/x-widget-all.js`,
+  $`${nodeExe} ${esBuildPath} ./src/index.mjs --bundle --format=esm --minify >./dist/x-widget-all.min.mjs`,
+  $`${nodeExe} ${esBuildPath} ./src/index.mjs --bundle --format=cjs --minify >./dist/x-widget-all.min.js`,
+
+  // x-widget files
+  $`${nodeExe} ${esBuildPath} ./src/x-widget.mjs --bundle --format=esm >./dist/x-widget.mjs`,
+  $`${nodeExe} ${esBuildPath} ./src/x-widget.mjs --bundle --format=cjs >./dist/x-widget.js`,
+  $`${nodeExe} ${esBuildPath} ./src/x-widget.mjs --bundle --format=esm --minify >./dist/x-widget.min.mjs`,
+  $`${nodeExe} ${esBuildPath} ./src/x-widget.mjs --bundle --format=cjs --minify >./dist/x-widget.min.js`,
+
+  // x-widget-data files
+  $`${nodeExe} ${esBuildPath} ./src/x-widget-data.mjs --bundle --format=esm >./dist/x-widget-data.mjs`,
+  $`${nodeExe} ${esBuildPath} ./src/x-widget-data.mjs --bundle --format=cjs >./dist/x-widget-data.js`,
+  $`${nodeExe} ${esBuildPath} ./src/x-widget-data.mjs --bundle --format=esm --minify >./dist/x-widget-data.min.mjs`,
+  $`${nodeExe} ${esBuildPath} ./src/x-widget-data.mjs --bundle --format=cjs --minify >./dist/x-widget-data.min.js`
+])
