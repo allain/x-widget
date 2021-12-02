@@ -33,9 +33,10 @@ before(() => {
 beforeEach(() => (document.body.innerHTML = ''))
 
 const tplHtml = `<template x-widget="x-c">
-        <div class="inner" x-data="xWidget({show: true})($el, $data)">
+        <div class="inner" x-data="xWidget({show: true, firstName: 'Default'})($el, $data)">
           <template x-if="show"><div>SHOW</div></template>
           <div class="t" x-text="JSON.stringify(show)"></div>
+          <span x-text="firstName"></span>
         </div>
       </template>`
 
@@ -222,4 +223,16 @@ it('supports getters and setters', async () => {
   await new Promise((r) => setTimeout(r, 100))
 
   expect(xGetSet.innerText).to.contain('Tested')
+})
+
+it('supports binding a camelcase prop', async () => {
+  document.body.innerHTML = html`
+    ${tplHtml}
+    <div id="root" x-data="{ name: 'John'}">
+      <x-c x-prop:first-name="name"></x-c>
+    </div>
+  `
+  const c = await waitForEl('x-c')
+  await new Promise((r) => setTimeout(r, 100))
+  expect(c.innerText).to.contain('John')
 })

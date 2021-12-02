@@ -16,7 +16,7 @@ export function xWidgetData(spec) {
 
     observer.observe(widgetEl, {
       attributes: true,
-      attributeFilter: Object.keys(spec),
+      attributeFilter: Object.keys(spec).map(camelToSnake),
       attributeOldValue: false
     })
 
@@ -38,7 +38,9 @@ export function xWidgetData(spec) {
     const attribs = [...widgetEl.attributes]
     for (const name of Object.getOwnPropertyNames(spec)) {
       const attrib = attribs.find((attr) =>
-        attr.name.match(new RegExp(`^((x-(bind|prop))?:)?${name}$`))
+        attr.name.match(
+          new RegExp(`^((x-(bind|prop))?:)?${camelToSnake(name)}$`)
+        )
       )
       if (!attrib) continue
 
@@ -55,7 +57,7 @@ export function xWidgetData(spec) {
           }
         })
       } else {
-        setProp(name, widgetEl.getAttribute(name))
+        setProp(name, widgetEl.getAttribute(camelToSnake(name)))
       }
     }
 
@@ -87,3 +89,6 @@ function findWidget(el) {
   while (el && !el.tagName.includes('-')) el = el.parentElement
   return el
 }
+
+const camelToSnake = (name) =>
+  name.replace(/[a-z][A-Z]/g, (m) => m[0] + '-' + m[1].toLowerCase())
