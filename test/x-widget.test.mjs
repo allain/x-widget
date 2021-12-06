@@ -126,10 +126,6 @@ it('supports named slots', async () => {
         <div class="default">
           <slot></slot>
         </div>
-        <span
-          class="inspection"
-          x-text="JSON.stringify({header: $slots.header, default: $slots.default})"
-        ></span>
       </div>
     </template>
 
@@ -188,10 +184,10 @@ it('supports named slots', async () => {
     expect(headerEl.innerText).to.equal('Default Header')
   }
 
-  // can inspect if slot given
+  // can get slot element if slot given
   {
-    const inspectEl = await waitForEl('#inspection .inspection')
-    expect(inspectEl.innerText).to.equal('{"header":true}')
+    const inspectEl = await waitForEl('#inspection')
+    expect(inspectEl._x_slots.header).to.have.lengthOf(1)
   }
 })
 
@@ -206,4 +202,27 @@ it.skip('can tell if something is safe left hand side', () => {
   expect(safeLeftHandSide('x()')).to.be.false
   expect(safeLeftHandSide('x.0')).to.be.false
   expect(safeLeftHandSide('x.true')).to.be.false
+})
+
+it('expose slot DOM in $slots', async () => {
+  document.body.innerHTML = html`
+    <template x-widget="x-test4">
+      <div class="inner">
+        <div class="default">
+          <slot></slot>
+        </div>
+      </div>
+    </template>
+
+    <x-test4 id="slot">
+      <template>Default1</template>
+      <template>Default2</template>
+    </x-test4>
+  `
+
+  // can get slot element if slot given
+  {
+    const slotEl = await waitForEl('#slot')
+    expect(slotEl._x_slots.default).to.have.lengthOf(2)
+  }
 })
