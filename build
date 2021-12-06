@@ -2,29 +2,82 @@
 
 const { fs } = require('zx')
 
-if (!(await fs.pathExists('dist'))) {
-  await $`mkdir dist`
+if (await fs.pathExists('dist')) {
+  await $`rm -r dist`
 }
+await $`mkdir dist`
 
 const nodeExe = os.platform() === 'win32' ? 'node.exe' : 'node'
 const esBuildPath = './node_modules/esbuild/bin/esbuild'
 
-await Promise.all([
-  // x-widget-all files
-  $`${nodeExe} ${esBuildPath} ./src/index.mjs --bundle --format=esm >./dist/x-widget-all.mjs`,
-  $`${nodeExe} ${esBuildPath} ./src/index.mjs --bundle --format=cjs >./dist/x-widget-all.js`,
-  $`${nodeExe} ${esBuildPath} ./src/index.mjs --bundle --format=esm --minify >./dist/x-widget-all.min.mjs`,
-  $`${nodeExe} ${esBuildPath} ./src/index.mjs --bundle --format=cjs --minify >./dist/x-widget-all.min.js`,
+const builds = [
+  {
+    src: './src/index.mjs',
+    format: 'esm',
+    target: './dist/x-widget-all.mjs'
+  },
+  {
+    src: './src/index.mjs',
+    format: 'cjs',
+    target: './dist/x-widget-all.js'
+  },
+  {
+    src: './src/index.mjs',
+    format: 'esm',
+    target: './dist/x-widget-all.min.mjs'
+  },
+  {
+    src: './src/index.mjs',
+    format: 'cjs',
+    target: './dist/x-widget-all.min.js'
+  },
+  {
+    src: './src/x-widget.mjs',
+    format: 'esm',
+    target: './dist/x-widget.mjs'
+  },
+  {
+    src: './src/x-widget.mjs',
+    format: 'cjs',
+    target: './dist/x-widget.js'
+  },
+  {
+    src: './src/x-widget.mjs',
+    format: 'esm',
+    target: './dist/x-widget.min.mjs'
+  },
+  {
+    src: './src/x-widget.mjs',
+    format: 'cjs',
+    target: './dist/x-widget.min.js'
+  },
+  {
+    src: './src/x-widget-data.mjs',
+    format: 'esm',
+    target: './dist/x-widget-data.mjs'
+  },
+  {
+    src: './src/x-widget-data.mjs',
+    format: 'cjs',
+    target: './dist/x-widget-data.js'
+  },
+  {
+    src: './src/x-widget-data.mjs',
+    format: 'esm',
+    target: './dist/x-widget-data.min.mjs'
+  },
+  {
+    src: './src/x-widget-data.mjs',
+    format: 'cjs',
+    target: './dist/x-widget-data.min.js'
+  }
+]
 
-  // x-widget files
-  $`${nodeExe} ${esBuildPath} ./src/x-widget.mjs --bundle --format=esm >./dist/x-widget.mjs`,
-  $`${nodeExe} ${esBuildPath} ./src/x-widget.mjs --bundle --format=cjs >./dist/x-widget.js`,
-  $`${nodeExe} ${esBuildPath} ./src/x-widget.mjs --bundle --format=esm --minify >./dist/x-widget.min.mjs`,
-  $`${nodeExe} ${esBuildPath} ./src/x-widget.mjs --bundle --format=cjs --minify >./dist/x-widget.min.js`,
-
-  // x-widget-data files
-  $`${nodeExe} ${esBuildPath} ./src/x-widget-data.mjs --bundle --format=esm >./dist/x-widget-data.mjs`,
-  $`${nodeExe} ${esBuildPath} ./src/x-widget-data.mjs --bundle --format=cjs >./dist/x-widget-data.js`,
-  $`${nodeExe} ${esBuildPath} ./src/x-widget-data.mjs --bundle --format=esm --minify >./dist/x-widget-data.min.mjs`,
-  $`${nodeExe} ${esBuildPath} ./src/x-widget-data.mjs --bundle --format=cjs --minify >./dist/x-widget-data.min.js`
-])
+await Promise.all(
+  builds.map(
+    (build) =>
+      $`esbuild ${build.src} --bundle --format=${build.format} ${
+        build.target.includes('.min.') ? '--minify' : ''
+      }  >${build.target}`
+  )
+)
