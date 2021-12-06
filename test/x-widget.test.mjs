@@ -1,7 +1,7 @@
 import { expect } from '@esm-bundle/chai/esm/chai.js'
 import plugin from '../src/index.mjs'
 
-import { safeLeftHandSide } from '../src/x-widget.mjs'
+import { safeLeftHandSide, slotsMagic } from '../src/x-widget.mjs'
 import Alpine from 'alpinejs'
 
 const waitUntil = (predicate, timeout = 10000) =>
@@ -187,7 +187,7 @@ it('supports named slots', async () => {
   // can get slot element if slot given
   {
     const inspectEl = await waitForEl('#inspection')
-    expect(inspectEl._x_slots.header).to.have.lengthOf(1)
+    expect(slotsMagic(inspectEl).header).to.have.lengthOf(1)
   }
 })
 
@@ -223,6 +223,6 @@ it('expose slot DOM in $slots', async () => {
   // can get slot element if slot given
   {
     const slotEl = await waitForEl('#slot')
-    expect(slotEl._x_slots.default).to.have.lengthOf(2)
+    expect(slotsMagic(slotEl).default).to.have.lengthOf(2)
   }
 })
