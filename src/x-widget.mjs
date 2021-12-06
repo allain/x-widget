@@ -28,7 +28,7 @@ export function xWidgetDirective(el, { expression, modifiers }) {
 
         const slotFills = collectSlotFills(this)
         this._x_slots = Object.fromEntries(
-          [...slotFills.entries()].map(([name]) => [name, true])
+          [...slotFills.entries()].map(([name, value]) => [name, value])
         )
 
         const targetSlots = findSlots(newEl)
