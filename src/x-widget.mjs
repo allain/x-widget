@@ -52,7 +52,7 @@ export function xWidgetDirective(el, { expression, modifiers }) {
 
 function findSlots(el) {
   let slots = [...el.querySelectorAll('slot')]
-  if (el.tagName === 'SLOT') slots.push(el)
+  if (el.tagName === 'SLOT') slots.unshift(el)
   const templates = el.querySelectorAll('template')
   for (const template of templates) {
     if (template.getAttribute('x-widget')) continue
