@@ -24,7 +24,7 @@ const waitForEl = (selector) =>
 const html = String.raw
 
 before(() => {
-  document.body.setAttribute('x-data', '')
+  document.body.setAttribute('x-data', '{rows: [1,2,3] , columns: [1,2]}')
   Alpine.plugin(plugin)
   Alpine.start()
 })
@@ -208,6 +208,9 @@ it('expose slot DOM in $slots', async () => {
   document.body.innerHTML = html`
     <template x-widget="x-test4">
       <div class="inner">
+        <div class="header">
+          <slot name="header"></slot>
+        </div>
         <div class="default">
           <slot></slot>
         </div>
@@ -215,6 +218,8 @@ it('expose slot DOM in $slots', async () => {
     </template>
 
     <x-test4 id="slot">
+      <template slot="header">Header1</template>
+      <template slot="header">Header2</template>
       <template>Default1</template>
       <template>Default2</template>
     </x-test4>
@@ -224,5 +229,34 @@ it('expose slot DOM in $slots', async () => {
   {
     const slotEl = await waitForEl('#slot')
     expect(slotsMagic(slotEl).default).to.have.lengthOf(2)
+    expect(slotsMagic(slotEl).header).to.have.lengthOf(2)
+  }
+})
+
+it('supports nested slots', async () => {
+  document.body.innerHTML = html`
+    <template x-widget="x-test5">
+      <div>
+        <template x-for="row of rows">
+          <slot name="outer">
+            <template x-for="column of columns">
+              <div class="inner">
+                <slot name="inner">Hello</slot>
+              </div>
+            </template>
+          </slot>
+        </template>
+      </div>
+    </template>
+
+    <x-test5 id="slot">
+      <template slot="inner">Inner</template>
+    </x-test5>
+  `
+
+  // can get slot element if slot given
+  {
+    const innerEl = await waitForEl('#slot .inner')
+    expect(innerEl.innerText).to.have.string('Inner')
   }
 })
