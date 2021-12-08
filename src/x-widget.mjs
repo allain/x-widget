@@ -51,9 +51,8 @@ export function xWidgetDirective(el, { expression, modifiers }) {
 }
 
 function findSlots(el) {
-  if (el.tagName === 'SLOT') return [el]
-
   let slots = [...el.querySelectorAll('slot')]
+  if (el.tagName === 'SLOT') slots.push(el)
   const templates = el.querySelectorAll('template')
   for (const template of templates) {
     if (template.getAttribute('x-widget')) continue
