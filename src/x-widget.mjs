@@ -44,13 +44,32 @@ export function xWidgetDirective(el, { expression, modifiers }) {
           targetSlot.replaceWith(...replacements)
         }
 
-        Promise.resolve().then(() => {
+        later(() => {
           // this.innerHTML = ''
           this.replaceChildren(newEl)
         })
       }
     }
   )
+}
+
+let blockStart = null
+let queue = Promise.resolve()
+const MAX_LOCK_TIME = 250
+function later(fn) {
+  queue = queue.then(() => {
+    fn()
+    if (blockStart === null) {
+      blockStart = Date.now()
+    } else if (Date.now() - blockStart > MAX_LOCK_TIME) {
+      return new Promise((r) => {
+        setTimeout(() => {
+          blockStart = null
+          r()
+        }, 0)
+      })
+    }
+  })
 }
 
 function findSlots(el) {
