@@ -45,7 +45,7 @@ export function xWidgetDirective(el, { expression, modifiers }) {
         }
 
         Promise.resolve().then(() => {
-          this.innerHTML = ''
+          // this.innerHTML = ''
           this.replaceChildren(newEl)
         })
       }
