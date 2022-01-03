@@ -45,7 +45,6 @@ export function xWidgetDirective(el, { expression, modifiers }) {
         }
 
         later(() => {
-          // this.innerHTML = ''
           this.replaceChildren(newEl)
         })
       }
@@ -118,48 +117,34 @@ function collectSlotFills(el) {
 export function xPropDirective(
   el,
   { value: attribName, expression },
-  { Alpine, cleanup }
+  { Alpine, cleanup, effect }
 ) {
   const propName = snakeToCamel(attribName)
-  let evaluate = Alpine.evaluateLater(el.parentElement, expression)
 
-  let setter
+  const propObj = Alpine.reactive({ [propName]: null })
+
+  const readParent = Alpine.evaluateLater(el.parentElement, expression)
+
+  effect(() => readParent((propValue) => (propObj[propName] = propValue)))
+  let removeScope
+
   if (safeLeftHandSide(el, expression)) {
-    setter = Alpine.evaluateLater(
-      el.parentElement,
-      `${expression} = __placeholder`
+    const setter = Alpine.evaluateLater(el.parentElement, `${expression} = __`)
+    removeScope = addScopeToNode(
+      el,
+      new Proxy(propObj, {
+        set(_target, _, newValue) {
+          setter(() => {}, { scope: { __: newValue } })
+          return true
+        }
+      })
     )
   } else {
-    setter = () => {}
-  }
-
-  if (!el._x_props) {
-    el._x_props = {}
-    el._x_props_cleanup = addScopeToNode(el, el._x_props)
+    removeScope = addScopeToNode(el, propObj)
   }
 
   cleanup(() => {
-    if (!el._x_props) return
-
-    delete el._x_props[propName]
-    if (Object.keys(el._x_props).length === 0) {
-      el._x_props_cleanup()
-      delete el._x_props
-      delete el._x_props_cleanup
-    }
-  })
-
-  Object.defineProperty(el._x_props, propName, {
-    enumerable: true,
-    configurable: true,
-    get() {
-      let result
-      evaluate((value) => (result = value))
-      return result
-    },
-    set(value) {
-      setter(() => {}, { scope: { __placeholder: value } })
-    }
+    removeScope()
   })
 }
 

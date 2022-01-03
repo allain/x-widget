@@ -197,7 +197,7 @@ it.skip('can tell if something is safe left hand side', () => {
   expect(safeLeftHandSide('x.y.c')).to.be.true
   expect(safeLeftHandSide('x[y]')).to.be.true
   expect(safeLeftHandSide('x[y.z][b]')).to.be.true
-  TODO: expect(safeLeftHandSide('x[0]')).to.be.true
+  // TODO: expect(safeLeftHandSide('x[0]')).to.be.true
   expect(safeLeftHandSide('var')).to.be.false
   expect(safeLeftHandSide('x()')).to.be.false
   expect(safeLeftHandSide('x.0')).to.be.false

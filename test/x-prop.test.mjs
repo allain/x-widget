@@ -21,17 +21,18 @@ const waitForEl = (selector) =>
 // so html gets formatted in literals in vscode
 const html = String.raw
 
-before(() => {
-  document.body.setAttribute('x-data', '')
-  Alpine.directive('prop', xPropDirective)
-  window.Alpine = Alpine
-  Alpine.start()
-})
+describe('x-prop', () => {
+  before(() => {
+    document.body.setAttribute('x-data', '')
+    Alpine.directive('prop', xPropDirective)
+    window.Alpine = Alpine
+    Alpine.start()
+  })
 
-beforeEach(() => (document.body.innerHTML = ''))
+  beforeEach(() => (document.body.innerHTML = ''))
 
-it('works in basic case', async () => {
-  document.body.innerHTML = `
+  it('works in basic case', async () => {
+    document.body.innerHTML = `
   <div id="root" x-data="{x: 10}">
     <div x-prop:y="x">
        <span x-text="y"></span>
@@ -39,20 +40,20 @@ it('works in basic case', async () => {
     </div>
   `
 
-  const spanEl = await waitForEl('span')
+    const spanEl = await waitForEl('span')
 
-  expect(spanEl.innerText).to.equal('10')
+    expect(spanEl.innerText).to.equal('10')
 
-  Alpine.evaluate(spanEl, 'y = 20')
+    Alpine.evaluate(spanEl, 'y = 20')
 
-  await new Promise((r) => setTimeout(r, 0))
+    await new Promise((r) => setTimeout(r, 0))
 
-  const rootEl = await waitForEl('#root')
-  expect(Alpine.evaluate(rootEl, 'x')).to.equal(20)
-})
+    const rootEl = await waitForEl('#root')
+    expect(Alpine.evaluate(rootEl, 'x')).to.equal(20)
+  })
 
-it('sees props in scope', async () => {
-  document.body.innerHTML = `
+  it('sees props in scope', async () => {
+    document.body.innerHTML = `
   <div id="root" x-data="{x: 10}">
     <div x-prop:y="x">
        <span x-text="JSON.stringify({x,y})"></span>
@@ -60,59 +61,43 @@ it('sees props in scope', async () => {
     </div>
   `
 
-  const spanEl = await waitForEl('span')
+    const spanEl = await waitForEl('span')
 
-  expect(spanEl.innerText).to.equal('{"x":10,"y":10}')
-})
+    expect(spanEl.innerText).to.equal('{"x":10,"y":10}')
+  })
 
-it('cleans up if last prop removed', async () => {
-  document.body.innerHTML = html`
-    <div id="root" x-prop:x="10" x-prop:y="20"></div>
-  `
+  it('supports deep refs', async () => {
+    document.body.innerHTML = html`
+      <div id="root" x-data="{a: {b: 10}}">
+        <div class="inner" x-prop:x="a.b"></div>
+      </div>
+    `
 
-  const spanEl = await waitForEl('#root')
+    const rootEl = await waitForEl('#root')
+    const innerEl = await waitForEl('.inner')
 
-  expect(spanEl._x_props).not.to.be.undefined
-  spanEl.removeAttribute('x-prop:x')
-  await new Promise((r) => setTimeout(r, 0))
-  expect(spanEl._x_props).not.to.be.undefined
-  spanEl.removeAttribute('x-prop:y')
-  await new Promise((r) => setTimeout(r, 0))
+    await new Promise((r) => setTimeout(r, 0))
+    Alpine.evaluate(innerEl, 'x = 20')
+    await new Promise((r) => setTimeout(r, 0))
 
-  expect(spanEl._x_props).to.be.undefined
-})
+    expect(Alpine.evaluate(rootEl, 'a.b')).to.equal(20)
+  })
 
-it('supports deep refs', async () => {
-  document.body.innerHTML = html`
-    <div id="root" x-data="{a: {b: 10}}">
-      <div class="inner" x-prop:x="a.b"></div>
-    </div>
-  `
+  it('works with non left hand side expressions', async () => {
+    document.body.innerHTML = html`
+      <div id="root" x-prop:x="10" x-prop:y="20" x-text="x + y"></div>
+    `
 
-  const rootEl = await waitForEl('#root')
-  const innerEl = await waitForEl('.inner')
+    const spanEl = await waitForEl('#root')
 
-  await new Promise((r) => setTimeout(r, 0))
-  Alpine.evaluate(innerEl, 'x = 20')
-  await new Promise((r) => setTimeout(r, 0))
+    expect(spanEl.innerText).to.equal('30')
+  })
 
-  expect(Alpine.evaluate(rootEl, 'a.b')).to.equal(20)
-})
+  it('assigning to non left hand side expressions works', async () => {
+    document.body.innerHTML = html` <div id="root" x-prop:x="10"></div> `
 
-it('works with non left hand side expressions', async () => {
-  document.body.innerHTML = html`
-    <div id="root" x-prop:x="10" x-prop:y="20" x-text="x + y"></div>
-  `
-
-  const spanEl = await waitForEl('#root')
-
-  expect(spanEl.innerText).to.equal('30')
-})
-
-it('assigning to non left hand side expressions is no-op', async () => {
-  document.body.innerHTML = html` <div id="root" x-prop:x="10"></div> `
-
-  const spanEl = await waitForEl('#root')
-  Alpine.evaluate(spanEl, 'x = 20')
-  expect(Alpine.evaluate(spanEl, 'x')).to.equal(10)
+    const spanEl = await waitForEl('#root')
+    Alpine.evaluate(spanEl, 'x = 20')
+    expect(Alpine.evaluate(spanEl, 'x')).to.equal(20)
+  })
 })
