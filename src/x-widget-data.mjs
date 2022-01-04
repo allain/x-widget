@@ -1,3 +1,6 @@
+const camelToSnake = (name) =>
+  name.replace(/[a-z][A-Z]/g, (m) => m[0] + '-' + m[1].toLowerCase())
+
 export function xWidgetData(spec) {
   const Alpine = this
   return ($el, $data) => {
@@ -89,6 +92,3 @@ function findWidget(el) {
   while (el && !el.tagName.includes('-')) el = el.parentElement
   return el
 }
-
-const camelToSnake = (name) =>
-  name.replace(/[a-z][A-Z]/g, (m) => m[0] + '-' + m[1].toLowerCase())

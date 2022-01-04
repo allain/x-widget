@@ -123,7 +123,12 @@ export function xPropDirective(
 
   const propObj = Alpine.reactive({ [propName]: null })
 
-  const readParent = Alpine.evaluateLater(el.parentElement, expression)
+  let readParent
+  if (expression.startsWith('$')) {
+    readParent = Alpine.evaluateLater(el.parentElement, `(() => ${expression})`)
+  } else {
+    readParent = Alpine.evaluateLater(el.parentElement, expression)
+  }
 
   effect(() => readParent((propValue) => (propObj[propName] = propValue)))
   let removeScope
