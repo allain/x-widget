@@ -120,19 +120,12 @@ export function xPropDirective(
   { Alpine, cleanup, effect }
 ) {
   const propName = snakeToCamel(attribName)
-
   const propObj = Alpine.reactive({ [propName]: null })
 
-  let readParent
-  if (expression.startsWith('$')) {
-    readParent = Alpine.evaluateLater(el.parentElement, `(() => ${expression})`)
-  } else {
-    readParent = Alpine.evaluateLater(el.parentElement, expression)
-  }
+  const read = Alpine.evaluateLater(el.parentElement, `() => ${expression}`)
+  effect(() => read((propValue) => (propObj[propName] = propValue)))
 
-  effect(() => readParent((propValue) => (propObj[propName] = propValue)))
   let removeScope
-
   if (safeLeftHandSide(el, expression)) {
     const setter = Alpine.evaluateLater(el.parentElement, `${expression} = __`)
     removeScope = addScopeToNode(
@@ -148,9 +141,7 @@ export function xPropDirective(
     removeScope = addScopeToNode(el, propObj)
   }
 
-  cleanup(() => {
-    removeScope()
-  })
+  cleanup(() => removeScope)
 }
 
 export function safeLeftHandSide(el, lhs) {
