@@ -123,16 +123,35 @@ export function xPropDirective(
   const propObj = Alpine.reactive({ [propName]: null })
 
   const read = Alpine.evaluateLater(el.parentElement, `() => ${expression}`)
-  effect(() => read((propValue) => (propObj[propName] = propValue)))
+
+  let setValue
+
+  effect(() =>
+    read((propValue) => {
+      propObj[propName] = propValue
+      setValue = undefined
+    })
+  )
 
   let removeScope
   if (safeLeftHandSide(el, expression)) {
     const setter = Alpine.evaluateLater(el.parentElement, `${expression} = __`)
+
     removeScope = addScopeToNode(
       el,
       new Proxy(propObj, {
-        set(_target, _, newValue) {
-          setter(() => {}, { scope: { __: newValue } })
+        get(target, name) {
+          return name !== propName || typeof setValue === 'undefined'
+            ? target[name]
+            : setValue
+        },
+        set(target, name, newValue) {
+          if (name === propName) {
+            setValue = newValue
+            setter(() => {}, { scope: { __: newValue } })
+          } else {
+            target[name] = newValue
+          }
           return true
         }
       })
