@@ -9,13 +9,20 @@ export function slotsMagic(el) {
   return el?._x_slots
 }
 
-export function xWidgetDirective(el, { expression, modifiers }) {
+export function xWidgetDirective(el, { expression, modifiers }, { Alpine }) {
   const tagName = expression
 
   if (modifiers[0]) {
     const style = document.createElement('style')
     style.innerHTML = `${tagName} { display: ${modifiers[0]}}`
     document.head.appendChild(style)
+  }
+
+  // needed for knowing what widgets have already been defined
+  if (Alpine._widgets) {
+    Alpine._widgets.push(tagName)
+  } else {
+    Alpine._widgets = [tagName]
   }
 
   if (window.customElements.get(tagName)) return
