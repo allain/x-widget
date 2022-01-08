@@ -12,6 +12,8 @@ export function slotsMagic(el) {
 export function xWidgetDirective(el, { expression, modifiers }, { Alpine }) {
   const tagName = expression
 
+  if (window.customElements.get(tagName)) return
+
   if (modifiers[0]) {
     const style = document.createElement('style')
     style.innerHTML = `${tagName} { display: ${modifiers[0]}}`
@@ -25,13 +27,13 @@ export function xWidgetDirective(el, { expression, modifiers }, { Alpine }) {
     Alpine._widgets = [tagName]
   }
 
-  if (window.customElements.get(tagName)) return
+  const templateContent = el.content.firstElementChild
 
   window.customElements.define(
     tagName,
     class extends HTMLElement {
       connectedCallback() {
-        const newEl = el.content.firstElementChild.cloneNode(true)
+        const newEl = templateContent.cloneNode(true)
 
         const slotFills = collectSlotFills(this)
         this._x_slots = Object.fromEntries(
