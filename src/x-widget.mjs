@@ -53,9 +53,11 @@ export function xWidgetDirective(el, { expression, modifiers }, { Alpine }) {
           targetSlot.replaceWith(...replacements)
         }
 
-        later(() => {
+        // later(() => {
+        setTimeout(() => {
           this.replaceChildren(newEl)
-        })
+        }, 0)
+        // })
       }
     }
   )
