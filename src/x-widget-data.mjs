@@ -3,9 +3,17 @@ const camelToSnake = (name) =>
 
 export function xWidgetData(spec) {
   const Alpine = this
+  const propDescriptorEntries = Object.entries(
+    Object.getOwnPropertyDescriptors(spec)
+  )
+
   return ($el, $data) => {
     const widgetEl = findWidget($el)
     console.assert(widgetEl, 'widget not found')
+
+    const boundProps = Array.from(widgetEl.attributes)
+      .filter((attr) => attr.name.startsWith('x-prop:'))
+      .map(({ name }) => name.substr(7))
 
     const observer = new MutationObserver((changes) => {
       changes.forEach(({ attributeName, target }) => {
@@ -23,18 +31,18 @@ export function xWidgetData(spec) {
       attributeOldValue: false
     })
 
+    const proplessDescriptors = Object.fromEntries(
+      propDescriptorEntries.filter(([name]) => !boundProps.includes(name))
+    )
+
     const data = Alpine.reactive(
       Object.assign(
-        Object.create(
-          Object.getPrototypeOf(spec),
-          Object.getOwnPropertyDescriptors(spec)
-        )
-        // TODO: figure out why destroy is called almost immediately after the widget gets mounted
-        // {
-        //   destroy() {
-        //     observer.disconnect()
-        //   }
-        // }
+        Object.create(Object.getPrototypeOf(spec), proplessDescriptors),
+        {
+          destroy() {
+            observer.disconnect()
+          }
+        }
       )
     )
 
