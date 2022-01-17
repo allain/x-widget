@@ -50,6 +50,7 @@
   "homepage": "https://github.com/allain/x-widget#readme",
   "devDependencies": {
     "@esm-bundle/chai": "^4.3.4",
+    "@types/alpinejs": "^3.7.0",
     "@web/test-runner": "^0.13.22",
     "alpinejs": "^3.5.1",
     "esbuild": "^0.13.15",

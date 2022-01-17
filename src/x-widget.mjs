@@ -4,6 +4,8 @@ import {
   mergeProxies
 } from 'alpinejs/src/scope.js'
 
+import { lazyEvaluator } from './lazy-evaluator.mjs'
+
 export function slotsMagic(el) {
   while (el && !el._x_slots) el = el.parentElement
   return el?._x_slots
@@ -40,7 +42,7 @@ export function xWidgetDirective(el, { expression, modifiers }, { Alpine }) {
           [...slotFills.entries()].map(([name, value]) => [name, value])
         )
 
-        const targetSlots = findSlots(newEl)
+        const targetSlots = findTargetSlots(newEl)
 
         for (const targetSlot of targetSlots) {
           const slotName = targetSlot.name || 'default'
@@ -53,43 +55,20 @@ export function xWidgetDirective(el, { expression, modifiers }, { Alpine }) {
           targetSlot.replaceWith(...replacements)
         }
 
-        // later(() => {
-        setTimeout(() => {
-          this.replaceChildren(newEl)
-        }, 0)
-        // })
+        setTimeout(() => this.replaceChildren(newEl), 0)
       }
     }
   )
 }
 
-let blockStart = null
-let queue = Promise.resolve()
-const MAX_LOCK_TIME = 250
-function later(fn) {
-  queue = queue.then(() => {
-    fn()
-    if (blockStart === null) {
-      blockStart = Date.now()
-    } else if (Date.now() - blockStart > MAX_LOCK_TIME) {
-      return new Promise((r) => {
-        setTimeout(() => {
-          blockStart = null
-          r()
-        }, 0)
-      })
-    }
-  })
-}
-
-function findSlots(el) {
+function findTargetSlots(el) {
   let slots = [...el.querySelectorAll('slot')]
   if (el.tagName === 'SLOT') slots.unshift(el)
   const templates = el.querySelectorAll('template')
   for (const template of templates) {
     if (template.getAttribute('x-widget')) continue
     for (const child of template.content.children) {
-      slots.push(...findSlots(child))
+      slots.push(...findTargetSlots(child))
     }
   }
   return slots
@@ -133,20 +112,20 @@ export function xPropDirective(
   const propName = snakeToCamel(attribName)
   const propObj = Alpine.reactive({ [propName]: null })
 
-  const read = Alpine.evaluateLater(el.parentElement, `() => ${expression}`)
+  const read = lazyEvaluator(el.parentElement, expression)
 
   let setValue
 
-  effect(() =>
+  effect(() => {
     read((propValue) => {
       propObj[propName] = propValue
       setValue = undefined
     })
-  )
+  })
 
   let removeScope
   if (safeLeftHandSide(el, expression)) {
-    const setter = Alpine.evaluateLater(el.parentElement, `${expression} = __`)
+    const setter = lazyEvaluator(el.parentElement, `${expression} = __`)
 
     removeScope = addScopeToNode(
       el,
