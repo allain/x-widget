@@ -3,8 +3,10 @@ import {
   closestDataStack,
   mergeProxies
 } from 'alpinejs/src/scope.js'
-
+import { Later } from './later.mjs'
 import { lazyEvaluator } from './lazy-evaluator.mjs'
+
+const later = Later()
 
 export function slotsMagic(el) {
   while (el && !el._x_slots) el = el.parentElement
@@ -55,7 +57,12 @@ export function xWidgetDirective(el, { expression, modifiers }, { Alpine }) {
           targetSlot.replaceWith(...replacements)
         }
 
-        setTimeout(() => this.replaceChildren(newEl), 0)
+        // optimization to immediately render widgets that are simple
+        if (targetSlots.length) {
+          setTimeout(() => this.replaceChildren(newEl), 0)
+        } else {
+          later(() => this.replaceChildren(newEl), 0)
+        }
       }
     }
   )

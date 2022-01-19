@@ -18,10 +18,6 @@ export function xWidgetData(spec) {
     const observer = new MutationObserver((changes) => {
       changes.forEach(({ attributeName, target }) => {
         setProp(attributeName, target.getAttribute(attributeName))
-        if (!target.isConnected) {
-          // TODO: make destroy method below work so we don't need to check for this
-          observer.disconnect()
-        }
       })
     })
 

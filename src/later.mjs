@@ -1,6 +1,4 @@
-const MAX_LOCK_TIME = 250
-
-function Later(maxBlockTime = 250) {
+export function Later(maxBlockTime = 250) {
   let queue = Promise.resolve()
   let blockStart = null
   return function later(fn) {
