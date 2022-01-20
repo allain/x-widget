@@ -1,7 +1,8 @@
 import { expect } from '@esm-bundle/chai/esm/chai.js'
 import plugin from '../src/index.mjs'
 
-import { safeLeftHandSide, slotsMagic } from '../src/x-widget.mjs'
+import { slotsMagic } from '../src/x-widget.mjs'
+
 import Alpine from 'alpinejs'
 
 const waitUntil = (predicate, timeout = 10000) =>
@@ -189,19 +190,6 @@ it('supports named slots', async () => {
     const inspectEl = await waitForEl('#inspection')
     expect(slotsMagic(inspectEl).header).to.have.lengthOf(1)
   }
-})
-
-it.skip('can tell if something is safe left hand side', () => {
-  expect(safeLeftHandSide('x')).to.be.true
-  expect(safeLeftHandSide('xYz')).to.be.true
-  expect(safeLeftHandSide('x.y.c')).to.be.true
-  expect(safeLeftHandSide('x[y]')).to.be.true
-  expect(safeLeftHandSide('x[y.z][b]')).to.be.true
-  // TODO: expect(safeLeftHandSide('x[0]')).to.be.true
-  expect(safeLeftHandSide('var')).to.be.false
-  expect(safeLeftHandSide('x()')).to.be.false
-  expect(safeLeftHandSide('x.0')).to.be.false
-  expect(safeLeftHandSide('x.true')).to.be.false
 })
 
 it('expose slot DOM in $slots', async () => {

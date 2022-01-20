@@ -27,17 +27,21 @@ function generateEvaluatorFromString(dataStack, expression, el) {
 
       // Check if the function ran synchronously,
       if (func.finished) {
-        receiver(func.result)
+        receiver(bindResult(func.result, completeScope))
         func.result = undefined
       } else {
         // If not, return the result when the promise resolves.
         promise
-          .then((result) => receiver(result))
+          .then((result) => bindResult(result, completeScope))
           .catch((error) => handleError(error, el, expression))
           .finally(() => (func.result = undefined))
       }
     }
   }
+}
+
+function bindResult(result, scope) {
+  return typeof result === 'function' ? result.bind(scope) : result
 }
 
 let evaluatorMemo = {}

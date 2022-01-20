@@ -1,5 +1,5 @@
 import { expect } from '@esm-bundle/chai/esm/chai.js'
-import { xPropDirective } from '../src/index.mjs'
+import { xPropDirective, safeLeftHandSide } from '../src/x-prop-directive.mjs'
 import Alpine from 'alpinejs'
 
 const waitUntil = (predicate, timeout = 10000) =>
@@ -100,4 +100,17 @@ describe('x-prop', () => {
     Alpine.evaluate(spanEl, 'x = 20')
     expect(Alpine.evaluate(spanEl, 'x')).to.equal(20)
   })
+})
+
+it('can tell if something is safe left hand side', () => {
+  expect(safeLeftHandSide('x')).to.be.true
+  expect(safeLeftHandSide('xYz')).to.be.true
+  expect(safeLeftHandSide('x.y.c')).to.be.true
+  expect(safeLeftHandSide('x[y]')).to.be.true
+  expect(safeLeftHandSide('x[y.z][b]')).to.be.true
+  // TODO: expect(safeLeftHandSide('x[0]')).to.be.true
+  // TODO: expect(safeLeftHandSide('var')).to.be.false
+  // expect(safeLeftHandSide('x()')).to.be.false
+  // expect(safeLeftHandSide('x.0')).to.be.false
+  // expect(safeLeftHandSide('x.true')).to.be.false
 })

@@ -1,6 +1,6 @@
 import { xWidgetData } from './x-widget-data.mjs'
-
-import { xWidgetDirective, xPropDirective, slotsMagic } from './x-widget.mjs'
+import { xPropDirective } from './x-prop-directive.mjs'
+import { xWidgetDirective, slotsMagic } from './x-widget.mjs'
 
 export default function (Alpine) {
   Alpine.magic('slots', slotsMagic)
