@@ -24,6 +24,7 @@ export function xPropDirective(
   effect(() => {
     read((propValue) => {
       propObj[propName] = propValue
+      el[propName] = propValue
       setValue = undefined
     })
   })

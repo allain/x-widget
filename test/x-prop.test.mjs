@@ -66,6 +66,17 @@ describe('x-prop', () => {
     expect(spanEl.innerText).to.equal('{"x":10,"y":10}')
   })
 
+  it('sets props on element', async () => {
+    document.body.innerHTML = `
+  <div id="root" x-data="{x: true}">
+    <input type="checkbox" x-prop:indeterminate="x">
+  </div>
+  `
+
+    const inputEl = await waitForEl('input')
+    expect(inputEl.indeterminate).to.be.true
+  })
+
   it('supports deep refs', async () => {
     document.body.innerHTML = html`
       <div id="root" x-data="{a: {b: 10}}">
