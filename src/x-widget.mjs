@@ -30,10 +30,19 @@ export function xWidgetDirective(el, { expression, modifiers }, { Alpine }) {
   window.customElements.define(
     tagName,
     class extends HTMLElement {
+      constructor() {
+        super()
+        this._slotFills = null
+      }
       connectedCallback() {
+        let slotFills
+        if (this._slotFills) {
+          slotFills = this._slotFills
+        } else {
+          slotFills = collectSlotFills(this)
+          this._slotFills = slotFills
+        }
         const newEl = templateContent.cloneNode(true)
-
-        const slotFills = collectSlotFills(this)
         this._x_slots = Object.fromEntries(
           [...slotFills.entries()].map(([name, value]) => [name, value])
         )
@@ -43,20 +52,18 @@ export function xWidgetDirective(el, { expression, modifiers }, { Alpine }) {
         for (const targetSlot of targetSlots) {
           const slotName = targetSlot.name || 'default'
           const fills = slotFills.get(slotName)
-
-          const replacements = fills
-            ? slotFills.get(slotName)
-            : [...targetSlot.childNodes]
-
-          targetSlot.replaceWith(...replacements)
+          const replacements = fills ?? [...targetSlot.childNodes]
+          targetSlot.replaceChildren(
+            ...replacements.map((n) => n.cloneNode(true))
+          )
         }
 
         // optimization to immediately render widgets that are simple
-        if (targetSlots.length) {
-          setTimeout(() => this.replaceChildren(newEl), 0)
-        } else {
-          later(() => this.replaceChildren(newEl), 0)
-        }
+        // if (targetSlots.length) {
+        // setTimeout(() => this.replaceChildren(newEl), 0)
+        // } else {
+        later(() => this.replaceChildren(newEl), 0)
+        // }
       }
     }
   )
