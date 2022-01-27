@@ -52,18 +52,20 @@ export function xWidgetDirective(el, { expression, modifiers }, { Alpine }) {
         for (const targetSlot of targetSlots) {
           const slotName = targetSlot.name || 'default'
           const fills = slotFills.get(slotName)
-          const replacements = fills ?? [...targetSlot.childNodes]
-          targetSlot.replaceChildren(
-            ...replacements.map((n) => n.cloneNode(true))
-          )
+          if (fills) {
+            targetSlot.replaceWith(...fills.map((n) => n.cloneNode(true)))
+          } else {
+            // shouldn't use cloned children since that might orphan nested slots
+            targetSlot.replaceWith(...[...targetSlot.childNodes])
+          }
         }
 
         // optimization to immediately render widgets that are simple
-        // if (targetSlots.length) {
-        // setTimeout(() => this.replaceChildren(newEl), 0)
-        // } else {
-        later(() => this.replaceChildren(newEl), 0)
-        // }
+        if (targetSlots.length) {
+          setTimeout(() => this.replaceChildren(newEl), 0)
+        } else {
+          later(() => this.replaceChildren(newEl), 0)
+        }
       }
     }
   )
@@ -72,6 +74,7 @@ export function xWidgetDirective(el, { expression, modifiers }, { Alpine }) {
 function findTargetSlots(el) {
   let slots = [...el.querySelectorAll('slot')]
   if (el.tagName === 'SLOT') slots.unshift(el)
+
   const templates = el.querySelectorAll('template')
   for (const template of templates) {
     if (template.getAttribute('x-widget')) continue
@@ -79,6 +82,7 @@ function findTargetSlots(el) {
       slots.push(...findTargetSlots(child))
     }
   }
+
   return slots
 }
 

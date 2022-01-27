@@ -245,6 +245,7 @@ it('supports nested slots', async () => {
   // can get slot element if slot given
   {
     const innerEl = await waitForEl('#slot .inner')
+    await new Promise((r) => setTimeout(r, 1000))
     expect(innerEl.innerText).to.have.string('Inner')
   }
 })
