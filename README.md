@@ -8,7 +8,7 @@ It's implemented using WebComponents but it favors keeping the component state i
 
 ```html
 <!-- Step 1. Define the Widget -->
-<template x-widget="x-button">
+<template x-data x-widget="x-button">
   <button x-data="xWidget({label: ''})($el, $data)" x-text="label"></button>
 </template>
 
@@ -36,7 +36,7 @@ Alpine.plugin(xWidget)
 ## Using Slots
 
 ```html
-<template x-widget="x-panel">
+<template x-data x-widget="x-panel">
   <div>
     <template x-if="$slots.header">
       <div class="header">
@@ -70,7 +70,7 @@ It supports giving values for properties using attributes, as well as a new `x-p
 In the example below, clicking on "Close" will set `showDropdown` to false.
 
 ```html
-<template x-widget="x-dropdown">
+<template x-data x-widget="x-dropdown">
   <div x-data="xWidget({ open: false, items: [] })($el, $data)">
     <div x-show="open">
       <button @click="open = false">Close</button>
@@ -104,7 +104,7 @@ If you don't like the look of having the widget's spec in the DOM, you can use t
   )
 </script>
 
-<template x-widget="x-dropdown">
+<template x-data x-widget="x-dropdown">
   <div x-data="xDropdown($el, $data)">
     <div x-show="open">
       <button @click="open = false"></button>
