@@ -46,6 +46,22 @@ it('works in basic case', async () => {
   expect(innerEl.parentElement.tagName).to.equal('X-TEST1')
 })
 
+it('automatically assigns an id to widgets', async () => {
+  document.body.innerHTML = `
+	<template x-widget="x-test1">
+	   <div class="inner">Hello World</div>
+	</template>
+
+	<x-test1></x-test1>
+  `
+
+  const xTest1 = await waitForEl('x-test1')
+
+  await waitForEl('.inner')
+
+  expect(xTest1.id).not.to.equal('')
+})
+
 it('fires event when component is connected', async () => {
   let connectedEvent = new Promise((resolve) =>
     document.body.addEventListener('x-widget:connected', resolve, {

@@ -26,7 +26,6 @@ describe('x-widget-data', () => {
   before(() => {
     document.body.setAttribute('x-data', '')
     Alpine.plugin(plugin)
-
     Alpine.data('xWidget', xWidgetData.bind(Alpine))
     Alpine.start()
   })
@@ -46,8 +45,8 @@ describe('x-widget-data', () => {
       ${tplHtml}
       <x-c></x-c>
     `
-    const c = await waitForEl('x-c')
-    await new Promise((resolve) => setTimeout(resolve, 1))
+    const c = await waitForEl('.inner')
+    await new Promise((resolve) => setTimeout(resolve, 10))
     expect(c.innerText).to.contain('SHOW')
   })
 
