@@ -47,9 +47,9 @@ export function xWidgetDirective(el, { expression, modifiers }, { Alpine }) {
           [...slotFills.entries()].map(([name, value]) => [name, value])
         )
 
-        if (!this.id) {
-          this.setAttribute('id', Alpine.evaluate(this, `$id('${tagName}')`))
-        }
+        // if (!this.id) {
+        // this.setAttribute('x-bind:id', Alpine.evaluate(this, `$id('${tagName}')`))
+        // }
 
         const targetSlots = findTargetSlots(newEl)
 
