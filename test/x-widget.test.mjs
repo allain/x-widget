@@ -46,6 +46,27 @@ it('works in basic case', async () => {
   expect(innerEl.parentElement.tagName).to.equal('X-TEST1')
 })
 
+it('fires event when component is connected', async () => {
+  let connectedEvent = new Promise((resolve) =>
+    document.body.addEventListener('x-widget:connected', resolve, {
+      once: true
+    })
+  )
+  document.body.innerHTML = `
+	<template x-widget="x-test1">
+	   <div class="inner">Hello World</div>
+	</template>
+
+	<x-test1></x-test1>
+  `
+
+  await waitForEl('.inner')
+  const event = await connectedEvent
+
+  expect(event.type).to.equal('x-widget:connected')
+  expect(event.target).to.equal(document.body.querySelector('x-test1'))
+})
+
 it('supports default slot', async () => {
   document.body.innerHTML = html`
     <template x-widget="x-test2">

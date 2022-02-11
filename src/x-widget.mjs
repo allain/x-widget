@@ -66,6 +66,12 @@ export function xWidgetDirective(el, { expression, modifiers }, { Alpine }) {
         } else {
           later(() => this.replaceChildren(newEl), 0)
         }
+
+        this.dispatchEvent(
+          new CustomEvent('x-widget:connected', {
+            bubbles: true
+          })
+        )
       }
     }
   )
