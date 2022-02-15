@@ -1,7 +1,3 @@
-import { Later } from './later.mjs'
-
-const later = Later()
-
 export function slotsMagic(el) {
   while (el && !el._x_slots) el = el.parentElement
   return el?._x_slots
@@ -64,12 +60,7 @@ export function xWidgetDirective(el, { expression, modifiers }, { Alpine }) {
           }
         }
 
-        // optimization to immediately render widgets that are simple
-        if (targetSlots.length) {
-          setTimeout(() => this.replaceChildren(newEl), 0)
-        } else {
-          later(() => this.replaceChildren(newEl), 0)
-        }
+        requestAnimationFrame(() => this.replaceChildren(newEl))
 
         this.dispatchEvent(
           new CustomEvent('x-widget:connected', {

@@ -65,6 +65,7 @@ describe('x-widget-data', () => {
       <x-c show></x-c>
     `
     const c = await waitForEl('x-c')
+    await new Promise((r) => requestAnimationFrame(r))
 
     expect(c.innerText).to.contain('SHOW')
   })
@@ -75,6 +76,8 @@ describe('x-widget-data', () => {
       <x-c x-prop:show="true"></x-c>
     `
     const c = await waitForEl('x-c')
+
+    await new Promise((r) => requestAnimationFrame(r))
 
     expect(c.innerText).to.contain('SHOW')
   })
@@ -101,6 +104,7 @@ describe('x-widget-data', () => {
     const rootEl = await waitForEl('#root')
 
     const c = await waitForEl('x-c')
+    await new Promise((r) => requestAnimationFrame(r))
     expect(c.innerText).to.contain('SHOW')
 
     Alpine.evaluate(rootEl, 'rootShow = false')
@@ -125,6 +129,7 @@ describe('x-widget-data', () => {
       </div>
     `
     const cA = await waitForEl('#a')
+    await new Promise((r) => requestAnimationFrame(r))
     expect(cA.innerText).to.contain('SHOW')
 
     const cB = await waitForEl('#b')
@@ -141,6 +146,7 @@ describe('x-widget-data', () => {
     const rootEl = await waitForEl('#root')
 
     const c = await waitForEl('x-c')
+    await new Promise((r) => requestAnimationFrame(r))
     expect(c.innerText).to.contain('SHOW')
 
     Alpine.evaluate(rootEl, 'rootShow=false')
