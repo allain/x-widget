@@ -1,6 +1,6 @@
 {
   "name": "x-widget",
-  "version": "0.2.9",
+  "version": "0.2.10",
   "description": "Adds the ability to define reusable Widgets (WebComponents) using Alpinejs.",
   "main": "./dist/x-widget-all.js",
   "module": "./dist/x-widget-all.mjs",
