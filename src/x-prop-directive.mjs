@@ -12,53 +12,43 @@ const snakeToCamel = (name) =>
 export function xPropDirective(
   el,
   { value: attribName, expression },
-  { Alpine, cleanup, effect }
+  { cleanup }
 ) {
   const propName = snakeToCamel(attribName)
-  const propObj = Alpine.reactive({ [propName]: null })
-
   const read = lazyEvaluator(el.parentElement, expression)
 
-  let setValue
+  // allow assignment of unsafe left hand side by just using the new value without bubbling up
+  let unsafeValue
+  const setter = safeLeftHandSide(el, expression)
+    ? lazyEvaluator(el.parentElement, `${expression} = __`)
+    : (_, { scope: { __: newValue } }) => (unsafeValue = newValue)
 
-  effect(() => {
-    read((propValue) => {
-      propObj[propName] = propValue
-      if (propName !== 'value') {
-        el[propName] = propValue
+  const propObj = {}
+
+  Object.defineProperty(propObj, propName, {
+    get() {
+      let result
+      if (typeof unsafeValue !== 'undefined') {
+        return unsafeValue
       }
-      setValue = undefined
-    })
+      read((newValue) => (result = newValue))
+      return result
+    },
+    set(newValue) {
+      if (propName !== 'value') {
+        el[propName] = newValue
+      }
+      setter(() => {}, { scope: { __: newValue } })
+    }
   })
 
-  let removeScope
-  if (safeLeftHandSide(el, expression)) {
-    const setter = lazyEvaluator(el.parentElement, `${expression} = __`)
-
-    removeScope = addScopeToNode(
-      el,
-      new Proxy(propObj, {
-        get(target, name) {
-          return name !== propName || typeof setValue === 'undefined'
-            ? target[name]
-            : setValue
-        },
-        set(target, name, newValue) {
-          if (name === propName) {
-            setValue = newValue
-            setter(() => {}, { scope: { __: newValue } })
-          } else {
-            target[name] = newValue
-          }
-          return true
-        }
-      })
-    )
-  } else {
-    removeScope = addScopeToNode(el, propObj)
+  if (propName !== 'value') {
+    el[propName] = propObj[propName]
   }
 
-  cleanup(() => removeScope)
+  const removeScope = addScopeToNode(el, propObj)
+
+  cleanup(() => removeScope())
 }
 
 export function safeLeftHandSide(el, lhs) {
