@@ -60,7 +60,12 @@ export function xWidgetDirective(el, { expression, modifiers }, { Alpine }) {
           }
         }
 
-        requestAnimationFrame(() => this.replaceChildren(newEl))
+        requestAnimationFrame(() => {
+          while (this.firstChild) {
+            this.removeChild(this.firstChild)
+          }
+          this.appendChild(newEl)
+        })
 
         this.dispatchEvent(
           new CustomEvent('x-widget:connected', {
